@@ -395,6 +395,18 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
 @media(max-width:840px){.dh-quick-actions{gap:5px;padding:6px}.dh-action-tile{font-size:10.5px;min-height:58px;padding:6px 3px}.dh-action-tile .ico{font-size:20px}.dh-google-actions{grid-template-columns:1fr 1fr 1fr}.dh-setting-card{padding:10px}}
 @media print{.dh-quick-actions,.dh-click-zone::after{display:none!important}.dh-click-zone{outline:none!important}}
 
+
+/* v2.2 direct inline tools + fixed logo + shared Drive */
+#invoice-preview-area .header-top{position:relative;min-height:54px}
+#invoice-preview-area .logo-area{width:86px!important;height:42px!important;min-width:86px!important;max-width:86px!important;overflow:hidden;display:flex!important;align-items:center!important;justify-content:center!important;left:0!important;top:3px!important}
+#invoice-preview-area .logo-area img{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;display:block!important}
+#invoice-preview-area .logo-area span{font-size:12pt!important;white-space:nowrap}
+#invoice-preview-area .title-center-box{padding-left:100px!important;padding-right:18px!important;min-height:48px;display:flex;flex-direction:column;justify-content:center}
+.dh-inline-content-row{display:flex;align-items:flex-start;gap:8px}.dh-inline-content-text{flex:1;min-width:0}.dh-inline-action-btn{flex:0 0 auto;background:#0d6efd!important;color:#fff!important;border:0;border-radius:6px!important;padding:6px 9px!important;font-size:11px!important;box-shadow:none!important;line-height:1.1}
+.dh-inline-photo-actions{display:flex;gap:6px;align-items:center;flex:0 0 auto}.dh-inline-photo-btn.secondary{background:#2563eb}.dh-inline-photo-btn.replace{background:#0f6cbd}
+.dh-google-actions-v22{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.dh-google-actions-v22 button{padding:9px 4px;font-size:12px}.dh-drive-link-wrap{margin-top:10px}.dh-drive-link-wrap input{font-size:13px;background:#fff}.dh-drive-note{font-family:Arial,sans-serif;font-size:12px;color:#475569;margin-top:6px;line-height:1.35}.dh-drive-status-account{font-weight:700;color:#166534}
+@media(max-width:840px){#invoice-preview-area .logo-area{width:72px!important;height:34px!important;min-width:72px!important;max-width:72px!important;top:3px!important}#invoice-preview-area .title-center-box{padding-left:82px!important;padding-right:6px!important}.dh-inline-action-btn,.dh-inline-photo-btn{font-size:9px!important;padding:4px 6px!important}.dh-google-actions-v22{grid-template-columns:repeat(4,1fr);gap:5px}.dh-google-actions-v22 button{font-size:10px;padding:8px 2px}}
+@media print{.dh-inline-action-btn,.dh-inline-photo-actions{display:none!important}}
 </style>
 
     <!-- Web/PWA deployment additions -->
@@ -437,23 +449,19 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
                 </div>
             </div>
             <div class="dh-setting-card">
-                <div class="dh-setting-title">Dịch nội dung</div>
-                <div class="dh-setting-sub">Dịch nhanh nội dung hiện tại theo cấu hình dịch của ứng dụng.</div>
-                <button type="button" class="btn-translate" id="dhCompactTranslate" style="width:100%">Dịch nội dung tự động</button>
-            </div>
-            <div class="dh-setting-card">
-                <div class="dh-setting-title">Quản lý tệp đính kèm</div>
-                <div class="dh-setting-sub">Thêm ảnh mới ngay từ màn hình chính. Có thể chọn lại danh sách ảnh tại đây.</div>
-                <button type="button" class="btn-secondary" id="dhCompactAttach" style="width:100%">＋ Chèn / thay ảnh đính kèm</button>
-            </div>
-            <div class="dh-setting-card">
                 <div class="dh-setting-title">Đồng bộ Google Drive</div>
-                <div class="dh-setting-sub">Google OAuth đã được cấu hình sẵn cho người dùng. Không cần nhập Client ID.</div>
+                <div class="dh-setting-sub">Đăng nhập một lần để đồng bộ dữ liệu và tải biên bản lên thư mục Drive dùng chung.</div>
                 <div class="dh-google-status" id="dhCompactGoogleStatus">Chưa đăng nhập Google.</div>
-                <div class="dh-google-actions">
+                <div class="dh-google-actions-v22">
                     <button type="button" class="btn-drive" id="dhCompactGoogleSignIn">Đăng nhập</button>
+                    <button type="button" class="btn-secondary" id="dhCompactGoogleSignOut">Thoát</button>
                     <button type="button" class="btn-drive2" id="dhCompactDriveSave">Lưu Drive</button>
                     <button type="button" class="btn-secondary" id="dhCompactDriveLoad">Tải Drive</button>
+                </div>
+                <div class="dh-drive-link-wrap">
+                    <label for="dhSharedDriveLink">Link thư mục Drive dùng chung</label>
+                    <input type="text" id="dhSharedDriveLink" placeholder="Dán link thư mục Google Drive dùng chung...">
+                    <div class="dh-drive-note">Khi có link thư mục, nút “Lưu lên Drive” sẽ tải PDF biên bản vào đúng thư mục này.</div>
                 </div>
             </div>
         </div>
@@ -690,8 +698,11 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             </tr>
             <tr>
                 <td colspan="2" style="padding-bottom: 6px;">
-                    <span class="text-black" id="lbl_r7">通知内容 / Nội dung thông báo:</span><br>
-                    <span class="text-blue" id="out_noidung" style="white-space: pre-line; display: block; min-height: 55px; font-size: 12pt; line-height: 1.35; margin: 0; padding: 0;"></span>
+                    <span class="text-black" id="lbl_r7">通知内容 / Nội dung thông báo:</span>
+                    <div class="dh-inline-content-row">
+                        <span class="text-blue dh-inline-content-text" id="out_noidung" style="white-space: pre-line; display: block; min-height: 55px; font-size: 12pt; line-height: 1.35; margin: 0; padding: 0;"></span>
+                        <button type="button" class="dh-inline-action-btn" id="btnInlineTranslate" data-html2canvas-ignore="true">文A Dịch</button>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -730,7 +741,10 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
                 <td colspan="2" style="min-height: 80px; vertical-align: top;">
                     <div class="dh-inline-photo-row">
                         <span class="text-black" id="lbl_attach">附带照片+文件 / Ảnh chụp + tài liệu đính kèm:</span>
-                        <button type="button" class="dh-inline-photo-btn" id="btnInlineAttach" data-html2canvas-ignore="true">＋ Chèn ảnh</button>
+                        <div class="dh-inline-photo-actions" data-html2canvas-ignore="true">
+                            <button type="button" class="dh-inline-photo-btn replace" id="btnInlineReplace" data-html2canvas-ignore="true">▧ Thay ảnh</button>
+                            <button type="button" class="dh-inline-photo-btn" id="btnInlineAttach" data-html2canvas-ignore="true">＋ Chèn ảnh</button>
+                        </div>
                     </div>
                     <div id="previewImagesContainer" class="preview-images-grid"></div>
                 </td>
@@ -1719,7 +1733,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('logoContainer').innerHTML = `<img src="${e.target.result}" alt="Logo" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+                document.getElementById('logoContainer').innerHTML = `<img src="${e.target.result}" alt="Logo">`;
             }
             reader.readAsDataURL(file);
         }
@@ -1729,7 +1743,8 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         const files = Array.from(event.target.files || []);
         const container = document.getElementById('previewImagesContainer');
         const status = document.getElementById('attachmentStatus');
-        container.replaceChildren();
+        const appendMode = (window.dhAttachmentMode === 'append');
+        if (!appendMode) container.replaceChildren();
         if (!files.length) {
             status.textContent = 'Chưa chọn ảnh đính kèm.';
             return;
@@ -1758,8 +1773,11 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
                 loaded++;
             } catch(err) { console.error(err); }
         }
-        status.textContent = loaded ? ('Đã chọn và tải thành công ' + loaded + ' ảnh.') :
+        const total = container.querySelectorAll('img').length;
+        status.textContent = loaded ? ('Đã có ' + total + ' ảnh đính kèm.') :
             'Không đọc được ảnh. Hãy thử chọn ảnh từ Thư viện hoặc Tệp trên điện thoại.';
+        window.dhAttachmentMode = 'replace';
+        event.target.value = '';
     }
 
     async function autoTranslateText() {
@@ -2363,8 +2381,10 @@ let dhDidPan=false;
 let dhNaturalSize={w:0,h:0};
 let dhGoogleToken='';
 const DH_GOOGLE_STORAGE_KEY='donghui_google_sync_v20';
-const DH_DRIVE_FILE_NAME='donghui_notice_sync_v21.json';
-const DH_PRECONFIGURED_GOOGLE_CLIENT_ID='14365016820-s3vdmb8i81gbdfcbr4ogpuv6h.apps.googleusercontent.com';
+const DH_DRIVE_FILE_NAME='donghui_notice_sync_v22.json';
+const DH_PRECONFIGURED_GOOGLE_CLIENT_ID='14365016820-s3vdmb8i81gbdfcbr4ogpuv6ho3mb81f.apps.googleusercontent.com';
+const DH_SHARED_DRIVE_LINK_KEY='donghui_shared_drive_folder_v22';
+window.dhAttachmentMode='replace';
 
 function dhGetEl(id){return document.getElementById(id)}
 function dhOpenPanel(id){dhGetEl(id)?.classList.add('is-open')}
@@ -2424,18 +2444,29 @@ function dhInitTokenClient(){
  const id=DH_PRECONFIGURED_GOOGLE_CLIENT_ID;
  if(!dhValidGoogleClientId(id)){dhStatus('Google OAuth chưa được cấu hình đúng trong ứng dụng.');return false}
  if(!window.google?.accounts?.oauth2){dhStatus('Google Identity Services chưa tải xong. Hãy thử lại sau vài giây.');return false}
- window.dhTokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email openid profile',callback:r=>{if(r?.error){dhStatus('Google OAuth: '+r.error);return}if(r?.access_token){dhGoogleToken=r.access_token;dhFetchProfile();dhStatus('Đăng nhập Google thành công.',true)}},error_callback:e=>{dhStatus('Không mở được đăng nhập Google. Kiểm tra Authorized JavaScript origins trên Google Cloud.')}});return true
+ window.dhTokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email openid profile',callback:r=>{if(r?.error){dhStatus('Google OAuth: '+r.error);return}if(r?.access_token){dhGoogleToken=r.access_token;dhFetchProfile();dhStatus('Đăng nhập Google thành công.',true)}},error_callback:e=>{dhStatus('Không mở được đăng nhập Google. Kiểm tra Authorized JavaScript origins trên Google Cloud.')}});return true
 }
 function dhGoogleSignIn(){if(!dhInitTokenClient())return;if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
 function dhGoogleSignOut(){if(window.google?.accounts?.oauth2&&dhGoogleToken)google.accounts.oauth2.revoke(dhGoogleToken,()=>{});dhGoogleToken='';const b=dhGetEl('googleUserBadge');if(b){b.textContent='';b.style.display='none'}dhStatus('Đã đăng xuất Google.')}
 async function dhFetchProfile(){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+dhGoogleToken}});const m=await r.json();const b=dhGetEl('googleUserBadge');if(b){b.textContent='Đang đăng nhập: '+(m.email||m.name||'Google user');b.style.display='inline-block'}const c=dhGetEl('dhCompactGoogleStatus');if(c)c.textContent='Đã đăng nhập: '+(m.email||m.name||'Google user')}catch(_){}}
-function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.1',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
+function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.2',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
 function dhApplyPayload(p){if(p.record&&typeof dhRecord!=='undefined')dhRecord=p.record;if(p.editable)for(const [id,v]of Object.entries(p.editable)){const e=dhGetEl(id);if(e)e.value=v}try{if(typeof dhRenderProfiles==='function')dhRenderProfiles()}catch(_){}if(typeof syncData==='function')syncData();if(typeof dhSaveDraft==='function')dhSaveDraft()}
 async function dhFindDriveFile(){const q=encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`,{headers:{Authorization:'Bearer '+dhGoogleToken}});const d=await r.json();return d.files?.[0]||null}
 async function dhSaveToDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const payload=dhPayload(),file=await dhFindDriveFile(),meta={name:DH_DRIVE_FILE_NAME,parents:['appDataFolder'],mimeType:'application/json'},boundary='-------314159265358979323846',delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--',body=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/json\r\n\r\n'+JSON.stringify(payload)+close,url=file?`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';const r=await fetch(url,{method:file?'PATCH':'POST',headers:{Authorization:'Bearer '+dhGoogleToken,'Content-Type':'multipart/related; boundary='+boundary},body});dhStatus(r.ok?'Đã lưu dữ liệu lên Google Drive.':'Lưu Google Drive chưa thành công.',r.ok)}
 async function dhLoadFromDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const f=await dhFindDriveFile();if(!f)return dhStatus('Chưa có dữ liệu đồng bộ trên Drive.');const r=await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:'Bearer '+dhGoogleToken}});if(!r.ok)return dhStatus('Không tải được dữ liệu từ Drive.');dhApplyPayload(await r.json());dhStatus('Đã tải dữ liệu từ Google Drive.',true)}
 
 
+function dhExtractDriveFolderId(value){
+ const v=(value||'').trim();if(!v)return '';
+ let m=v.match(/\/folders\/([A-Za-z0-9_-]+)/);if(m)return m[1];
+ m=v.match(/[?&]id=([A-Za-z0-9_-]+)/);if(m)return m[1];
+ return /^[A-Za-z0-9_-]{10,}$/.test(v)?v:'';
+}
+function dhGetSharedFolderId(){return dhExtractDriveFolderId(dhGetEl('dhSharedDriveLink')?.value||localStorage.getItem(DH_SHARED_DRIVE_LINK_KEY)||'')}
+function dhInitSharedDriveLink(){
+ const el=dhGetEl('dhSharedDriveLink');if(!el)return;el.value=localStorage.getItem(DH_SHARED_DRIVE_LINK_KEY)||'';
+ el.addEventListener('input',()=>localStorage.setItem(DH_SHARED_DRIVE_LINK_KEY,el.value.trim()));
+}
 async function dhBuildPdfBlob(){
  const pages=await getExportCanvases();
  const jpegPages=pages.map(canvas=>({width:canvas.width,height:canvas.height,dataUrl:canvas.toDataURL('image/jpeg',0.92)}));
@@ -2447,14 +2478,15 @@ async function dhUploadCurrentPdfToDrive(){
    dhStatus('Đang tạo PDF và tải lên Google Drive...');
    const blob=await dhBuildPdfBlob();
    const ts=new Date().toISOString().replace(/[:.]/g,'-');
-   const meta={name:`Bien_Ban_DongHui_${ts}.pdf`,mimeType:'application/pdf'};
+   const folderId=dhGetSharedFolderId();
+   const meta={name:`Bien_Ban_DongHui_${ts}.pdf`,mimeType:'application/pdf'};if(folderId)meta.parents=[folderId];
    const boundary='-------donghui-v21-'+Date.now(),delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--';
    const bin=await blob.arrayBuffer();
    const header=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/pdf\r\n\r\n';
    const body=new Blob([header,bin,close],{type:'multipart/related; boundary='+boundary});
    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink',{method:'POST',headers:{Authorization:'Bearer '+dhGoogleToken},body});
    if(!r.ok)throw new Error('Google Drive trả về '+r.status);
-   dhStatus('Đã xuất PDF lên Google Drive.',true);
+   dhStatus(folderId?'Đã tải PDF vào thư mục Drive dùng chung.':'Đã xuất PDF lên Google Drive.',true);
  }catch(e){console.error(e);dhStatus('Không thể xuất PDF lên Drive: '+e.message);}
 }
 function dhOpenDocTypePopup(){
@@ -2474,11 +2506,11 @@ function dhBindCompactSettings(){
  const ui=dhGetEl('uiLangSelect'),sub=dhGetEl('subLang'),cui=dhGetEl('dhCompactUiLang'),csub=dhGetEl('dhCompactSubLang');
  if(ui&&cui){cui.innerHTML=ui.innerHTML;cui.value=ui.value;cui.addEventListener('change',()=>{ui.value=cui.value;syncData();dhQueueSave?.()})}
  if(sub&&csub){csub.innerHTML=sub.innerHTML;csub.value=sub.value;csub.addEventListener('change',()=>{sub.value=csub.value;syncData();dhQueueSave?.()})}
- dhGetEl('dhCompactTranslate')?.addEventListener('click',()=>autoTranslateText());
- dhGetEl('dhCompactAttach')?.addEventListener('click',dhOpenAttachmentPicker);
  dhGetEl('dhCompactGoogleSignIn')?.addEventListener('click',dhGoogleSignIn);
- dhGetEl('dhCompactDriveSave')?.addEventListener('click',dhSaveToDrive);
+ dhGetEl('dhCompactGoogleSignOut')?.addEventListener('click',dhGoogleSignOut);
+ dhGetEl('dhCompactDriveSave')?.addEventListener('click',dhUploadCurrentPdfToDrive);
  dhGetEl('dhCompactDriveLoad')?.addEventListener('click',dhLoadFromDrive);
+ dhInitSharedDriveLink();
 }
 
 
@@ -2488,9 +2520,10 @@ function dhHideDirectEditSettings(){
  // hide a row only if every form-group in it is hidden
  dhGetEl('dhSettingsPanel')?.querySelectorAll('.row').forEach(row=>{const groups=[...row.querySelectorAll(':scope > .form-group')];if(groups.length&&groups.every(g=>g.classList.contains('dh-direct-edit-hidden')))row.classList.add('dh-direct-edit-hidden')});
 }
-function dhOpenAttachmentPicker(){dhGetEl('attachInput')?.click()}
+function dhOpenAttachmentPicker(){window.dhAttachmentMode='append';dhGetEl('attachInput')?.click()}
+function dhReplaceAttachments(){window.dhAttachmentMode='replace';dhGetEl('attachInput')?.click()}
 
-(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);
+(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhGetEl('btnInlineReplace')?.addEventListener('click',dhReplaceAttachments);dhGetEl('btnInlineTranslate')?.addEventListener('click',()=>autoTranslateText());
  dhGetEl('logoContainer')?.addEventListener('click',()=>dhGetEl('logoInput')?.click());
  dhGetEl('docTitleClickZone')?.addEventListener('click',dhOpenDocTypePopup);
  dhGetEl('dhCloseDocType')?.addEventListener('click',dhCloseDocTypePopup);
