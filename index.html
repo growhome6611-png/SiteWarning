@@ -349,46 +349,26 @@
             .dh-banner-slot { height: 92px; margin-bottom: 14px; }
         }
 
-/* v1.8 interactive clean preview + popup editing + pinch zoom + google sync */
-.report-workspace{background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);padding:12px;margin-bottom:24px;border:1px solid #d8e2ef}
-.report-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
-.report-toolbar-left,.report-toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.report-toolbar button,.report-toolbar .scale-badge{box-shadow:none}
-.scale-badge{display:inline-flex;align-items:center;justify-content:center;min-width:70px;padding:10px 12px;background:#eef4fb;border:1px solid #c8d7ea;border-radius:8px;color:#003366;font-weight:700}
-.report-viewport{overflow:auto;background:#eef3f8;border-radius:10px;padding:18px;touch-action:none;max-height:85vh}
-#invoice-preview-area{transform-origin:top left;transition:transform .12s ease}
-.preview-compact-note{font-size:12px;color:#526479}
-.field-hint{font-size:12px;color:#526479}
-.editable-highlight{cursor:pointer;position:relative;transition:background .18s ease, box-shadow .18s ease;border-radius:4px}
-.editable-highlight:hover{background:rgba(0,102,204,.08);box-shadow:0 0 0 1px rgba(0,102,204,.28) inset}
-.editable-block{padding:4px 6px}
-.popup-overlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px}
-.popup-card{width:min(760px,96vw);background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden}
-.popup-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #e6eef8}
-.popup-head h3{margin:0;color:#12345b;font-size:28px;font-family:Arial,sans-serif}
-.popup-body{padding:18px 22px}
-.popup-body label{font-family:Arial,sans-serif;font-size:16px;margin-bottom:8px}
-.popup-body input,.popup-body textarea{font-family:'Times New Roman',Times,serif;font-size:18px;padding:12px 14px;background:#fff}
-.popup-body textarea{min-height:180px}
-.popup-actions{display:flex;justify-content:flex-end;gap:12px;padding:0 22px 22px}
-.popup-actions button{flex:0 0 140px;font-family:Arial,sans-serif}
-.btn-cancel{background:#94a3b8;color:#fff}
-.btn-save{background:#0d6efd}
-.google-sync-box{border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff;margin-top:14px}
-.google-sync-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-.google-sync-row .form-group{margin-bottom:10px}
-.google-user-badge{font-size:14px;color:#0f5132;background:#e8f7ef;border:1px solid #b8e2c7;padding:8px 10px;border-radius:8px;display:none}
-.btn-secondary{background:#475569}
-.btn-drive{background:#2563eb}
-.btn-drive2{background:#0f766e}
-.btn-drive3{background:#dc2626}
-.editor-hidden .control-panel:first-of-type{display:none}
-@media (max-width: 840px){
-  .report-viewport{padding:10px;max-height:none;height:calc(100vh - 180px)}
-  .popup-head h3{font-size:22px}
-  .popup-actions{flex-wrap:wrap}
-  .popup-actions button{flex:1 1 130px}
-}
+/* v1.9 mobile-first document workspace */
+body{padding:0;background:#eef3f8;overflow-x:hidden}
+.main-container{max-width:none;width:100%;padding:0 10px 24px;box-sizing:border-box}
+.dh-appbar{position:sticky;top:0;z-index:1200;height:58px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #d8e2ef;box-shadow:0 2px 10px rgba(0,0,0,.06);font-family:Arial,sans-serif}
+.dh-brand{display:flex;align-items:center;gap:9px;font-weight:700;color:#12345b;font-size:16px}.dh-logo-badge{display:inline-flex;width:34px;height:34px;border-radius:8px;background:#0f4c91;color:white;align-items:center;justify-content:center;font-weight:800}
+.dh-app-actions{display:flex;gap:8px}.dh-icon-btn,.dh-mini-btn{flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:9px;background:#e9f1fb;color:#12345b;box-shadow:none;font-size:22px}.dh-mini-btn{width:38px;height:34px;font-size:22px}
+.dh-settings-panel,.dh-export-panel{display:none;position:fixed;z-index:1500;left:10px;right:10px;top:68px;bottom:10px;overflow:auto;margin:0!important;border-top:0;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.dh-settings-panel.is-open,.dh-export-panel.is-open{display:block}
+.dh-settings-head{position:sticky;top:-25px;z-index:2;margin:-25px -25px 18px;padding:16px 20px;background:#fff;border-bottom:1px solid #e5edf6;display:flex;align-items:center;justify-content:space-between;font-family:Arial,sans-serif;color:#12345b;font-size:18px}
+.dh-close-settings{flex:0 0 auto;background:#eef2f7;color:#475569;width:38px;height:38px;padding:0;box-shadow:none;font-size:26px}
+.ui-lang-container{position:static!important;justify-content:flex-end;margin-bottom:8px}
+.report-workspace{background:#fff;border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.10);margin:10px 0 0;padding:8px;border:1px solid #dbe5ef}
+.report-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 8px;font-family:Arial,sans-serif}.report-toolbar-actions{display:flex;align-items:center;gap:6px}.scale-badge{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:34px;background:#eef4fb;border:1px solid #c8d7ea;border-radius:8px;color:#003366;font-weight:700}.preview-compact-note{font-size:12px;color:#526479}
+.report-viewport{position:relative;overflow:auto;background:#f5f7fa;border-radius:8px;padding:6px;min-height:calc(100vh - 132px);height:calc(100vh - 132px);touch-action:none;-webkit-overflow-scrolling:touch}
+#invoice-preview-area{transform-origin:top left;margin:0!important;box-shadow:none;will-change:transform}
+.editable-highlight{cursor:pointer;border-radius:3px;transition:background .15s ease,box-shadow .15s ease}.editable-highlight:active,.editable-highlight:hover{background:rgba(0,102,204,.10);box-shadow:0 0 0 1px rgba(0,102,204,.28) inset}.editable-block{padding:3px 5px}
+.popup-overlay{position:fixed;inset:0;z-index:3000;background:rgba(15,23,42,.42);display:none;align-items:flex-start;justify-content:center;padding:10px;box-sizing:border-box;overflow:hidden}
+.popup-overlay.is-open{display:flex}.popup-card{width:min(720px,100%);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.28);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:hidden}.popup-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e6edf5;flex:0 0 auto}.popup-head h3{margin:0;color:#12345b;font-family:Arial,sans-serif;font-size:22px}.popup-close{flex:0 0 auto;width:38px;height:38px;padding:0;background:#eef2f7;color:#64748b;box-shadow:none;font-size:27px}.popup-body{padding:14px 16px;overflow:auto;min-height:0}.popup-body label{font-family:Arial,sans-serif;font-size:16px}.popup-body input,.popup-body textarea{font-size:18px;background:#fff;padding:11px 12px}.popup-body textarea{min-height:110px;max-height:32dvh}.popup-actions{display:flex;gap:10px;padding:0 16px 14px;flex:0 0 auto}.popup-actions button{flex:1;box-shadow:none}.btn-cancel{background:#94a3b8}.btn-save{background:#0d6efd}
+.google-sync-box{border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff;margin-top:14px}.google-user-badge{font-size:13px;color:#0f5132;background:#e8f7ef;border:1px solid #b8e2c7;padding:8px 10px;border-radius:8px;display:none;margin-bottom:6px}.btn-secondary{background:#475569}.btn-drive{background:#2563eb}.btn-drive2{background:#0f766e}.btn-drive3{background:#dc2626}
+@media(max-width:840px){.main-container{padding:0 6px 16px}.report-workspace{border-radius:10px;padding:5px}.report-viewport{padding:3px;height:calc(100dvh - 118px);min-height:calc(100dvh - 118px)}.report-toolbar{padding:4px 2px 6px}.preview-compact-note{font-size:11px}.dh-settings-panel,.dh-export-panel{left:6px;right:6px;top:64px;bottom:6px}.dh-settings-head{top:-12px;margin:-12px -12px 14px}.popup-overlay{padding:6px}.popup-card{border-radius:14px;max-height:calc(100dvh - 12px)}.popup-head{padding:10px 12px}.popup-head h3{font-size:20px}.popup-body{padding:10px 12px}.popup-body textarea{min-height:88px;max-height:26dvh}.popup-actions{padding:0 12px 10px}}
 
 </style>
 
@@ -401,18 +381,21 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon-192.png">
 
-
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
 </head>
 <body>
 
 <div class="main-container">
-    <!-- Reserved future advertising slot; deliberately outside the A4 document. -->
-    <div id="dh-banner-slot" class="dh-banner-slot" aria-label="Vị trí quảng cáo tương lai">
-      <span>Vị trí dành cho banner quảng cáo</span>
+    <div class="dh-appbar">
+        <div class="dh-brand"><span class="dh-logo-badge">DH</span><span>Dong Hui Notification</span></div>
+        <div class="dh-app-actions">
+            <button type="button" class="dh-icon-btn" id="btnFitScreen" aria-label="Vừa màn hình">⛶</button>
+            <button type="button" class="dh-icon-btn" id="btnExportMenu" aria-label="Xuất file">⇩</button>
+            <button type="button" class="dh-icon-btn" id="btnSettings" aria-label="Cài đặt">⚙</button>
+        </div>
     </div>
-    <div class="control-panel">
+<div class="control-panel dh-settings-panel" id="dhSettingsPanel">
+        <div class="dh-settings-head"><strong>Cài đặt biên bản</strong><button type="button" class="dh-close-settings" id="btnCloseSettings">×</button></div>
         <!-- Nút chọn ngôn ngữ giao diện phần mềm ở góc trên bên phải -->
         <div class="ui-lang-container">
             <label id="lbl_ui_lang">Ngôn ngữ:</label>
@@ -493,7 +476,6 @@
         </div>
 
         <div class="section-title" id="ui_sec2">2. Nhập Nội Dung Thông Báo (Chữ màu xanh)</div>
-        <div class="field-hint">Có thể chạm trực tiếp vào chữ màu xanh trên biên bản để mở popup chỉnh sửa nhanh.</div>
         <div class="row">
             <div class="form-group col">
                 <label id="ui_lbl_project">Tên công trình:</label>
@@ -574,32 +556,34 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             <label id="ui_lbl_date">Ngày lập biên bản:</label>
             <input type="text" id="in_ngay" value="2026/10/08" oninput="syncData()">
         </div>
-
-    <div class="google-sync-box">
-        <div class="section-title" style="margin-top:0">3. Đồng bộ Google Drive</div>
-        <div class="google-sync-row">
-            <div class="form-group col">
-                <label for="googleClientId">Google Client ID (OAuth Web)</label>
-                <input type="text" id="googleClientId" placeholder="Dán Google OAuth Client ID để bật đăng nhập & đồng bộ">
+        <div class="google-sync-box">
+            <div class="section-title" style="margin-top:0">Đồng bộ Google Drive</div>
+            <div class="form-group">
+                <label for="googleClientId">Google OAuth Web Client ID</label>
+                <input type="text" id="googleClientId" placeholder="Dán Client ID để bật đăng nhập và đồng bộ">
+            </div>
+            <div id="googleUserBadge" class="google-user-badge"></div>
+            <div id="googleSyncStatus" class="preview-compact-note">Chưa đăng nhập Google.</div>
+            <div class="btn-group" style="margin-top:8px">
+                <button type="button" class="btn-drive" id="btnGoogleSignIn">Đăng nhập Google</button>
+                <button type="button" class="btn-drive2" id="btnDriveSave">Lưu lên Drive</button>
+                <button type="button" class="btn-secondary" id="btnDriveLoad">Tải từ Drive</button>
+                <button type="button" class="btn-drive3" id="btnGoogleSignOut">Đăng xuất</button>
             </div>
         </div>
-        <div class="google-sync-row">
-            <div class="form-group col" style="flex:2">
-                <div id="googleUserBadge" class="google-user-badge"></div>
-                <div id="googleSyncStatus" class="preview-compact-note">Chưa đăng nhập Google. Sau khi cấu hình Client ID, bạn có thể đồng bộ dữ liệu giữa điện thoại và máy tính qua Google Drive.</div>
-            </div>
-        </div>
-        <div class="btn-group" style="margin-top:8px">
-            <button type="button" class="btn-drive" id="btnGoogleSignIn">Đăng nhập Google</button>
-            <button type="button" class="btn-drive2" id="btnDriveSave">Lưu lên Drive</button>
-            <button type="button" class="btn-secondary" id="btnDriveLoad">Tải từ Drive</button>
-            <button type="button" class="btn-drive3" id="btnGoogleSignOut">Đăng xuất</button>
-        </div>
-        <div class="preview-compact-note" style="margin-top:8px">Gợi ý: dùng cùng một tài khoản Google trên điện thoại và máy tính để biên bản tự đồng nhất nội dung.</div>
     </div>
-</div>
 
-<!-- KHU VỰC XUẤT FILE CHUẨN A4 -->
+    <!-- KHU VỰC XUẤT FILE CHUẨN A4 -->
+    <div class="report-workspace">
+        <div class="report-toolbar">
+            <span class="preview-compact-note" id="fitLabel">Vừa màn hình</span>
+            <div class="report-toolbar-actions">
+                <button type="button" class="dh-mini-btn" id="zoomOutBtn">−</button>
+                <span class="scale-badge" id="dhScaleBadge">100%</span>
+                <button type="button" class="dh-mini-btn" id="zoomInBtn">+</button>
+            </div>
+        </div>
+        <div class="report-viewport" id="reportViewport">
     <div id="invoice-preview-area">
         <div class="header-top">
             <div class="logo-area" id="logoContainer">
@@ -685,8 +669,12 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         </table>
     </div>
 
+        </div>
+    </div>
+
     <!-- Nút xuất file -->
-    <div class="control-panel" style="margin-top: 25px;">
+    <div class="control-panel dh-export-panel" id="dhExportPanel" style="margin-top: 16px;">
+        <div class="dh-settings-head"><strong>Xuất file & hồ sơ</strong><button type="button" class="dh-close-settings" id="btnCloseExport">×</button></div>
         <div class="section-title" id="ui_sec3" style="margin-top: 0;">3. Xuất File & Hồ Sơ</div>
         <div class="btn-group">
             <button class="btn-png" id="ui_btn_png" onclick="exportMultiPagePNG()">Xuất Ảnh PNG (Nhiều trang)</button>
@@ -699,21 +687,21 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
 
 <!-- Popup chỉnh sửa nhanh -->
 <div id="quickEditPopup" class="popup-overlay" aria-hidden="true">
-    <div class="popup-card">
-        <div class="popup-head">
-            <h3 id="quickEditTitle">Chỉnh sửa nội dung</h3>
-            <button type="button" onclick="dhCloseQuickEdit()" style="background:none;color:#64748b;font-size:28px;padding:0 4px;flex:0 0 auto">×</button>
-        </div>
-        <div class="popup-body">
-            <label id="quickEditLabel" for="quickEditInput">Nội dung:</label>
-            <input type="text" id="quickEditInput" style="display:none">
-            <textarea id="quickEditTextarea" style="display:none"></textarea>
-        </div>
-        <div class="popup-actions">
-            <button type="button" class="btn-cancel" onclick="dhCloseQuickEdit()">Hủy</button>
-            <button type="button" class="btn-save" onclick="dhSaveQuickEdit()">Lưu</button>
-        </div>
+  <div class="popup-card" id="quickEditCard">
+    <div class="popup-head">
+      <h3>Chỉnh sửa nội dung</h3>
+      <button type="button" class="popup-close" id="quickEditClose">×</button>
     </div>
+    <div class="popup-body">
+      <label id="quickEditLabel">Nội dung:</label>
+      <input type="text" id="quickEditInput" style="display:none">
+      <textarea id="quickEditTextarea" style="display:none"></textarea>
+    </div>
+    <div class="popup-actions">
+      <button type="button" class="btn-cancel" id="quickEditCancel">Hủy</button>
+      <button type="button" class="btn-save" id="quickEditSave">Lưu</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Xem Mẫu Gốc -->
@@ -2026,52 +2014,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
 
     function openPrintDialogWithImages(jpegPages) {
         const pageCss = '@page { size: A4; margin: 0; } body { margin: 0; } .page { width: 210mm; height: 297mm; page-break-after: always; break-after: page; } img { width: 210mm; height: 297mm; display: block; }';
-        const html = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dong Hui PDF</title><style>', pageCss, '
-/* v1.8 interactive clean preview + popup editing + pinch zoom + google sync */
-.report-workspace{background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);padding:12px;margin-bottom:24px;border:1px solid #d8e2ef}
-.report-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
-.report-toolbar-left,.report-toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.report-toolbar button,.report-toolbar .scale-badge{box-shadow:none}
-.scale-badge{display:inline-flex;align-items:center;justify-content:center;min-width:70px;padding:10px 12px;background:#eef4fb;border:1px solid #c8d7ea;border-radius:8px;color:#003366;font-weight:700}
-.report-viewport{overflow:auto;background:#eef3f8;border-radius:10px;padding:18px;touch-action:none;max-height:85vh}
-#invoice-preview-area{transform-origin:top left;transition:transform .12s ease}
-.preview-compact-note{font-size:12px;color:#526479}
-.field-hint{font-size:12px;color:#526479}
-.editable-highlight{cursor:pointer;position:relative;transition:background .18s ease, box-shadow .18s ease;border-radius:4px}
-.editable-highlight:hover{background:rgba(0,102,204,.08);box-shadow:0 0 0 1px rgba(0,102,204,.28) inset}
-.editable-block{padding:4px 6px}
-.popup-overlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px}
-.popup-card{width:min(760px,96vw);background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden}
-.popup-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #e6eef8}
-.popup-head h3{margin:0;color:#12345b;font-size:28px;font-family:Arial,sans-serif}
-.popup-body{padding:18px 22px}
-.popup-body label{font-family:Arial,sans-serif;font-size:16px;margin-bottom:8px}
-.popup-body input,.popup-body textarea{font-family:'Times New Roman',Times,serif;font-size:18px;padding:12px 14px;background:#fff}
-.popup-body textarea{min-height:180px}
-.popup-actions{display:flex;justify-content:flex-end;gap:12px;padding:0 22px 22px}
-.popup-actions button{flex:0 0 140px;font-family:Arial,sans-serif}
-.btn-cancel{background:#94a3b8;color:#fff}
-.btn-save{background:#0d6efd}
-.google-sync-box{border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff;margin-top:14px}
-.google-sync-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-.google-sync-row .form-group{margin-bottom:10px}
-.google-user-badge{font-size:14px;color:#0f5132;background:#e8f7ef;border:1px solid #b8e2c7;padding:8px 10px;border-radius:8px;display:none}
-.btn-secondary{background:#475569}
-.btn-drive{background:#2563eb}
-.btn-drive2{background:#0f766e}
-.btn-drive3{background:#dc2626}
-.editor-hidden .control-panel:first-of-type{display:none}
-@media (max-width: 840px){
-  .report-viewport{padding:10px;max-height:none;height:calc(100vh - 180px)}
-  .popup-head h3{font-size:22px}
-  .popup-actions{flex-wrap:wrap}
-  .popup-actions button{flex:1 1 130px}
-}
-
-</style>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-</head><body>'];
+        const html = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dong Hui PDF</title><style>', pageCss, '</style></head><body>'];
         jpegPages.forEach(p => html.push(`<div class="page"><img src="${p.dataUrl}"></div>`));
         html.push('</body></html>');
         const win = window.open('', '_blank');
@@ -2168,52 +2111,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         #invoice-preview-area .invoice-table .dh-signature-name { line-height: 1.25; }
         #invoice-preview-area .invoice-table .dh-signature-date { line-height: 1.25; font-size: 10pt; }
         #invoice-preview-area #lbl_attach { line-height: 1.2; }
-    
-/* v1.8 interactive clean preview + popup editing + pinch zoom + google sync */
-.report-workspace{background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);padding:12px;margin-bottom:24px;border:1px solid #d8e2ef}
-.report-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
-.report-toolbar-left,.report-toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.report-toolbar button,.report-toolbar .scale-badge{box-shadow:none}
-.scale-badge{display:inline-flex;align-items:center;justify-content:center;min-width:70px;padding:10px 12px;background:#eef4fb;border:1px solid #c8d7ea;border-radius:8px;color:#003366;font-weight:700}
-.report-viewport{overflow:auto;background:#eef3f8;border-radius:10px;padding:18px;touch-action:none;max-height:85vh}
-#invoice-preview-area{transform-origin:top left;transition:transform .12s ease}
-.preview-compact-note{font-size:12px;color:#526479}
-.field-hint{font-size:12px;color:#526479}
-.editable-highlight{cursor:pointer;position:relative;transition:background .18s ease, box-shadow .18s ease;border-radius:4px}
-.editable-highlight:hover{background:rgba(0,102,204,.08);box-shadow:0 0 0 1px rgba(0,102,204,.28) inset}
-.editable-block{padding:4px 6px}
-.popup-overlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px}
-.popup-card{width:min(760px,96vw);background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden}
-.popup-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #e6eef8}
-.popup-head h3{margin:0;color:#12345b;font-size:28px;font-family:Arial,sans-serif}
-.popup-body{padding:18px 22px}
-.popup-body label{font-family:Arial,sans-serif;font-size:16px;margin-bottom:8px}
-.popup-body input,.popup-body textarea{font-family:'Times New Roman',Times,serif;font-size:18px;padding:12px 14px;background:#fff}
-.popup-body textarea{min-height:180px}
-.popup-actions{display:flex;justify-content:flex-end;gap:12px;padding:0 22px 22px}
-.popup-actions button{flex:0 0 140px;font-family:Arial,sans-serif}
-.btn-cancel{background:#94a3b8;color:#fff}
-.btn-save{background:#0d6efd}
-.google-sync-box{border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff;margin-top:14px}
-.google-sync-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-.google-sync-row .form-group{margin-bottom:10px}
-.google-user-badge{font-size:14px;color:#0f5132;background:#e8f7ef;border:1px solid #b8e2c7;padding:8px 10px;border-radius:8px;display:none}
-.btn-secondary{background:#475569}
-.btn-drive{background:#2563eb}
-.btn-drive2{background:#0f766e}
-.btn-drive3{background:#dc2626}
-.editor-hidden .control-panel:first-of-type{display:none}
-@media (max-width: 840px){
-  .report-viewport{padding:10px;max-height:none;height:calc(100vh - 180px)}
-  .popup-head h3{font-size:22px}
-  .popup-actions{flex-wrap:wrap}
-  .popup-actions button{flex:1 1 130px}
-}
-
-</style>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-</head><body>${clone.innerHTML}${photosHTML}</body></html>`;
+    </style></head><body>${clone.innerHTML}${photosHTML}</body></html>`;
         const blob=new Blob(['\ufeff',content],{type:'application/msword'});
         const reader=new FileReader();
         reader.onload=()=>saveDataUrl(reader.result,'Bien_Ban_DongHui.doc','application/msword');
@@ -2375,278 +2273,43 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
 
 
 <script>
-// v1.8: interactive report editing, zoom, and Google Drive sync
-let dhQuickEditState = {targetId:'', title:'', multiline:false};
-let dhPreviewScale = 1;
-let dhPinchState = null;
-let dhGoogleToken = '';
-const DH_GOOGLE_STORAGE_KEY = 'donghui_google_sync_v18';
-const DH_DRIVE_FILE_NAME = 'donghui_notice_sync_v18.json';
+// v1.9 interaction layer
+let dhQuickEditState={targetId:'',multiline:false};
+let dhPreviewScale=1;
+let dhPinchStart=null;
+let dhGoogleToken='';
+const DH_GOOGLE_STORAGE_KEY='donghui_google_sync_v19';
+const DH_DRIVE_FILE_NAME='donghui_notice_sync_v19.json';
 
-function dhSetupPreviewWorkspace(){
-    const preview = document.getElementById('invoice-preview-area');
-    if(!preview || document.querySelector('.report-workspace')) return;
-    const workspace = document.createElement('div');
-    workspace.className = 'report-workspace';
-    workspace.innerHTML = `
-        <div class="report-toolbar">
-            <div class="report-toolbar-left">
-                <button type="button" class="btn-secondary" onclick="dhToggleEditor()">Ẩn/Hiện vùng nhập</button>
-                <button type="button" class="btn-secondary" onclick="dhZoomOut()">A−</button>
-                <span class="scale-badge" id="dhScaleBadge">100%</span>
-                <button type="button" class="btn-secondary" onclick="dhZoomIn()">A+</button>
-                <button type="button" class="btn-secondary" onclick="dhResetZoom()">Về 100%</button>
-            </div>
-            <div class="report-toolbar-right">
-                <span class="preview-compact-note">Dùng 2 ngón tay để zoom biên bản trên điện thoại/tablet.</span>
-            </div>
-        </div>
-        <div class="report-viewport" id="reportViewport"></div>`;
-    preview.parentNode.insertBefore(workspace, preview);
-    workspace.querySelector('#reportViewport').appendChild(preview);
-    dhApplyZoom();
-    const viewport = document.getElementById('reportViewport');
-    viewport.addEventListener('wheel', e => {
-        if(!e.ctrlKey) return;
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.05 : 0.05;
-        dhSetZoom(dhPreviewScale + delta);
-    }, {passive:false});
-    dhBindPinch(viewport);
-}
-function dhSetZoom(value){ dhPreviewScale = Math.max(0.55, Math.min(2.4, value)); dhApplyZoom(); }
-function dhZoomIn(){ dhSetZoom(dhPreviewScale + 0.1); }
-function dhZoomOut(){ dhSetZoom(dhPreviewScale - 0.1); }
-function dhResetZoom(){ dhSetZoom(1); }
-function dhApplyZoom(){
-    const preview = document.getElementById('invoice-preview-area');
-    if(!preview) return;
-    preview.style.transform = `scale(${dhPreviewScale})`;
-    preview.style.marginBottom = `${(dhPreviewScale-1) * 297 + 10}mm`;
-    const badge = document.getElementById('dhScaleBadge');
-    if(badge) badge.textContent = Math.round(dhPreviewScale * 100) + '%';
-}
-function dhBindPinch(viewport){
-    const pointers = new Map();
-    viewport.addEventListener('pointerdown', e => { pointers.set(e.pointerId, e); });
-    viewport.addEventListener('pointermove', e => {
-        if(!pointers.has(e.pointerId)) return;
-        pointers.set(e.pointerId, e);
-        if(pointers.size === 2){
-            const arr = [...pointers.values()];
-            const dist = Math.hypot(arr[0].clientX - arr[1].clientX, arr[0].clientY - arr[1].clientY);
-            if(!dhPinchState){ dhPinchState = {dist, scale: dhPreviewScale}; return; }
-            const ratio = dist / dhPinchState.dist;
-            dhSetZoom(dhPinchState.scale * ratio);
-        }
-    }, {passive:false});
-    ['pointerup','pointercancel','pointerleave'].forEach(evt => viewport.addEventListener(evt, e => {
-        pointers.delete(e.pointerId);
-        if(pointers.size < 2) dhPinchState = null;
-    }));
-}
-function dhToggleEditor(){
-    document.body.classList.toggle('editor-hidden');
-}
-function dhMakePreviewEditable(){
-    const mapping = [
-        ['out_congtrinh','in_congtrinh','Tên công trình',false],
-        ['out_hangmuc','in_hangmuc','Tên hạng mục',false],
-        ['out_donvithicong','in_donvithicong','Đơn vị thi công',false],
-        ['out_hopdong','in_hopdong','Mã số hợp đồng',false],
-        ['out_mathongbao','in_mathongbao','Mã số thông báo',false],
-        ['out_noidung','in_noidung','Nội dung thông báo',true],
-        ['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],
-        ['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],
-        ['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],
-        ['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],
-        ['out_ngay3','in_ngay','Ngày lập biên bản',false]
-    ];
-    mapping.forEach(([outId, inId, title, multiline]) => {
-        const out = document.getElementById(outId);
-        const input = document.getElementById(inId);
-        if(!out || !input) return;
-        out.classList.add('editable-highlight');
-        if(multiline) out.classList.add('editable-block');
-        out.title = 'Chạm để chỉnh sửa';
-        out.onclick = () => dhOpenQuickEdit(inId, title, multiline);
-    });
-}
-function dhOpenQuickEdit(targetId, title, multiline){
-    const target = document.getElementById(targetId);
-    if(!target) return;
-    dhQuickEditState = {targetId, title, multiline};
-    document.getElementById('quickEditTitle').textContent = 'Chỉnh sửa nội dung';
-    document.getElementById('quickEditLabel').textContent = title + ':';
-    const popup = document.getElementById('quickEditPopup');
-    const txt = document.getElementById('quickEditTextarea');
-    const inp = document.getElementById('quickEditInput');
-    if(multiline){
-        inp.style.display='none';
-        txt.style.display='block';
-        txt.value = target.value || target.textContent || '';
-        setTimeout(()=>txt.focus(), 30);
-    } else {
-        txt.style.display='none';
-        inp.style.display='block';
-        inp.value = target.value || target.textContent || '';
-        setTimeout(()=>inp.focus(), 30);
-    }
-    popup.style.display = 'flex';
-    popup.setAttribute('aria-hidden','false');
-}
-function dhCloseQuickEdit(){
-    const popup = document.getElementById('quickEditPopup');
-    popup.style.display = 'none';
-    popup.setAttribute('aria-hidden','true');
-}
-function dhSaveQuickEdit(){
-    const {targetId, multiline} = dhQuickEditState;
-    const target = document.getElementById(targetId);
-    if(!target) return dhCloseQuickEdit();
-    const value = multiline ? document.getElementById('quickEditTextarea').value : document.getElementById('quickEditInput').value;
-    target.value = value;
-    if(typeof syncData === 'function') syncData();
-    if(typeof dhQueueSave === 'function') dhQueueSave();
-    dhCloseQuickEdit();
-}
-async function dhHashGoogleReady(){
-    const raw = localStorage.getItem(DH_GOOGLE_STORAGE_KEY);
-    if(raw){
-        try{
-            const cfg = JSON.parse(raw);
-            if(cfg.clientId) document.getElementById('googleClientId').value = cfg.clientId;
-        }catch(e){}
-    }
-    document.getElementById('googleClientId').addEventListener('change', () => {
-        localStorage.setItem(DH_GOOGLE_STORAGE_KEY, JSON.stringify({clientId: document.getElementById('googleClientId').value.trim()}));
-        dhInitGoogleTokenClient();
-    });
-    document.getElementById('btnGoogleSignIn').addEventListener('click', dhGoogleSignIn);
-    document.getElementById('btnGoogleSignOut').addEventListener('click', dhGoogleSignOut);
-    document.getElementById('btnDriveSave').addEventListener('click', dhSaveToDrive);
-    document.getElementById('btnDriveLoad').addEventListener('click', dhLoadFromDrive);
-    dhInitGoogleTokenClient();
-}
-function dhSetGoogleStatus(msg, ok=false){
-    const el = document.getElementById('googleSyncStatus');
-    if(el) el.textContent = msg;
-    const badge = document.getElementById('googleUserBadge');
-    if(!ok && badge && !badge.textContent) badge.style.display='none';
-}
-function dhInitGoogleTokenClient(){
-    const clientId = (document.getElementById('googleClientId') || {}).value?.trim();
-    if(!clientId || !window.google || !google.accounts || !google.accounts.oauth2){
-        dhSetGoogleStatus('Chưa cấu hình Google Client ID. Hãy tạo OAuth Web Client rồi dán vào ô bên trên để bật đăng nhập và đồng bộ.');
-        return;
-    }
-    window.dhTokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email openid profile',
-        callback: (tokenResponse) => {
-            if(tokenResponse && tokenResponse.access_token){
-                dhGoogleToken = tokenResponse.access_token;
-                dhFetchGoogleProfile();
-                dhSetGoogleStatus('Đăng nhập Google thành công. Bạn có thể Lưu lên Drive hoặc Tải từ Drive.', true);
-            }
-        }
-    });
-}
-function dhGoogleSignIn(){
-    if(!window.dhTokenClient){ dhInitGoogleTokenClient(); }
-    if(!window.dhTokenClient){ return; }
-    window.dhTokenClient.requestAccessToken({prompt: dhGoogleToken ? '' : 'consent'});
-}
-function dhGoogleSignOut(){
-    if(window.google && google.accounts && google.accounts.oauth2 && dhGoogleToken){
-        google.accounts.oauth2.revoke(dhGoogleToken, ()=>{});
-    }
-    dhGoogleToken = '';
-    const badge = document.getElementById('googleUserBadge');
-    badge.textContent=''; badge.style.display='none';
-    dhSetGoogleStatus('Đã đăng xuất Google.');
-}
-async function dhFetchGoogleProfile(){
-    if(!dhGoogleToken) return;
-    try{
-        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {headers: {Authorization: 'Bearer ' + dhGoogleToken}});
-        const me = await res.json();
-        const badge = document.getElementById('googleUserBadge');
-        badge.textContent = 'Đang đăng nhập: ' + (me.email || me.name || 'Google user');
-        badge.style.display = 'inline-block';
-    }catch(e){}
-}
-function dhBuildSyncPayload(){
-    if(typeof dhSaveDraft === 'function') dhSaveDraft();
-    return {
-        savedAt: new Date().toISOString(),
-        app: 'DongHui_ThongBao_Web_Vercel_v1.8',
-        record: (typeof dhRecord !== 'undefined' ? dhRecord : null),
-        editable: Object.fromEntries(((typeof DH_EDITABLE_FIELDS !== 'undefined' ? DH_EDITABLE_FIELDS : [])).map(id => [id, (document.getElementById(id)||{}).value || '']))
-    };
-}
-function dhApplySyncPayload(payload){
-    if(payload.record && typeof payload.record === 'object') {
-        if(typeof dhRecord !== 'undefined') dhRecord = payload.record;
-    }
-    if(payload.editable){
-        for(const [id, value] of Object.entries(payload.editable)){
-            const el = document.getElementById(id);
-            if(el) el.value = value;
-        }
-    }
-    if(typeof dhRestoreData === 'function'){ try{ dhRenderProfiles(); }catch(e){} }
-    if(typeof syncData === 'function') syncData();
-    if(typeof dhSaveDraft === 'function') dhSaveDraft();
-}
-async function dhFindDriveFile(){
-    const q = encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`, {
-        headers: {Authorization: 'Bearer ' + dhGoogleToken}
-    });
-    const data = await res.json();
-    return data.files && data.files.length ? data.files[0] : null;
-}
-async function dhSaveToDrive(){
-    if(!dhGoogleToken) return dhSetGoogleStatus('Bạn cần đăng nhập Google trước khi lưu lên Drive.');
-    const payload = dhBuildSyncPayload();
-    const file = await dhFindDriveFile();
-    const metadata = {name: DH_DRIVE_FILE_NAME, parents:['appDataFolder'], mimeType:'application/json'};
-    const boundary = '-------314159265358979323846';
-    const delimiter = "\r\n--" + boundary + "\r\n";
-    const close_delim = "\r\n--" + boundary + "--";
-    const multipartRequestBody =
-      delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) +
-      delimiter + 'Content-Type: application/json\r\n\r\n' + JSON.stringify(payload) + close_delim;
-    const url = file ? `https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart` : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-    const method = file ? 'PATCH' : 'POST';
-    const res = await fetch(url, {
-        method,
-        headers: {Authorization: 'Bearer ' + dhGoogleToken, 'Content-Type': 'multipart/related; boundary=' + boundary},
-        body: multipartRequestBody
-    });
-    if(res.ok) dhSetGoogleStatus('Đã lưu dữ liệu biên bản lên Google Drive thành công.', true);
-    else dhSetGoogleStatus('Lưu lên Google Drive chưa thành công. Kiểm tra lại Client ID hoặc quyền truy cập Drive.');
-}
-async function dhLoadFromDrive(){
-    if(!dhGoogleToken) return dhSetGoogleStatus('Bạn cần đăng nhập Google trước khi tải dữ liệu từ Drive.');
-    const file = await dhFindDriveFile();
-    if(!file) return dhSetGoogleStatus('Chưa tìm thấy bản dữ liệu đã đồng bộ trên Google Drive.');
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {headers: {Authorization: 'Bearer ' + dhGoogleToken}});
-    if(!res.ok) return dhSetGoogleStatus('Không tải được dữ liệu từ Google Drive.');
-    const payload = await res.json();
-    dhApplySyncPayload(payload);
-    dhSetGoogleStatus('Đã tải dữ liệu từ Google Drive về thiết bị này.', true);
-}
-(function(){
-    const oldOnload = window.onload;
-    window.onload = function(){
-        if(typeof oldOnload === 'function') oldOnload();
-        dhSetupPreviewWorkspace();
-        dhMakePreviewEditable();
-        dhHashGoogleReady();
-    };
-})();
+function dhGetEl(id){return document.getElementById(id)}
+function dhOpenPanel(id){dhGetEl(id)?.classList.add('is-open')}
+function dhClosePanel(id){dhGetEl(id)?.classList.remove('is-open')}
+function dhSetScale(v){dhPreviewScale=Math.max(.35,Math.min(2.4,v));const p=dhGetEl('invoice-preview-area');if(p)p.style.transform=`scale(${dhPreviewScale})`;const b=dhGetEl('dhScaleBadge');if(b)b.textContent=Math.round(dhPreviewScale*100)+'%'}
+function dhFitToScreen(){const vp=dhGetEl('reportViewport'),p=dhGetEl('invoice-preview-area');if(!vp||!p)return; p.style.transform='none';const available=Math.max(100,vp.clientWidth-6);const natural=p.offsetWidth||793;dhSetScale(Math.min(1,available/natural));vp.scrollLeft=0;vp.scrollTop=0;const l=dhGetEl('fitLabel');if(l)l.textContent='Vừa màn hình'}
+function dhBindPinch(){const vp=dhGetEl('reportViewport');if(!vp)return;const pts=new Map();vp.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});try{vp.setPointerCapture(e.pointerId)}catch(_){}});vp.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){e.preventDefault();const a=[...pts.values()];const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(!dhPinchStart){dhPinchStart={d,scale:dhPreviewScale};return}dhSetScale(dhPinchStart.scale*(d/dhPinchStart.d))}}, {passive:false});['pointerup','pointercancel','lostpointercapture'].forEach(t=>vp.addEventListener(t,e=>{pts.delete(e.pointerId);if(pts.size<2)dhPinchStart=null}))}
+function dhMakeEditable(){[
+ ['out_congtrinh','in_congtrinh','Tên công trình',false],['out_hangmuc','in_hangmuc','Tên hạng mục',false],['out_donvithicong','in_donvithicong','Đơn vị thi công',false],['out_hopdong','in_hopdong','Mã số hợp đồng',false],['out_mathongbao','in_mathongbao','Mã số thông báo',false],['out_noidung','in_noidung','Nội dung thông báo',true],['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],['out_ngay3','in_ngay','Ngày lập biên bản',false]
+].forEach(([o,i,l,m])=>{const el=dhGetEl(o);if(!el)return;el.classList.add('editable-highlight');if(m)el.classList.add('editable-block');el.onclick=()=>dhOpenQuickEdit(i,l,m)})}
+function dhOpenQuickEdit(targetId,label,multiline){const t=dhGetEl(targetId);if(!t)return;dhQuickEditState={targetId,multiline};dhGetEl('quickEditLabel').textContent=label+':';const inp=dhGetEl('quickEditInput'),ta=dhGetEl('quickEditTextarea');if(multiline){inp.style.display='none';ta.style.display='block';ta.value=t.value}else{ta.style.display='none';inp.style.display='block';inp.value=t.value}const pop=dhGetEl('quickEditPopup');pop.classList.add('is-open');pop.setAttribute('aria-hidden','false');setTimeout(()=>{(multiline?ta:inp).focus({preventScroll:true});dhPlacePopupForKeyboard()},80)}
+function dhCloseQuickEdit(){const pop=dhGetEl('quickEditPopup');pop.classList.remove('is-open');pop.setAttribute('aria-hidden','true')}
+function dhSaveQuickEdit(){const s=dhQuickEditState,t=dhGetEl(s.targetId);if(!t)return dhCloseQuickEdit();t.value=s.multiline?dhGetEl('quickEditTextarea').value:dhGetEl('quickEditInput').value;if(typeof syncData==='function')syncData();if(typeof dhQueueSave==='function')dhQueueSave();dhCloseQuickEdit()}
+function dhPlacePopupForKeyboard(){const card=dhGetEl('quickEditCard');if(!card)return;const vv=window.visualViewport;const h=vv?vv.height:window.innerHeight;const top=vv?vv.offsetTop:0;card.style.maxHeight=Math.max(220,h-12)+'px';card.style.marginTop=Math.max(0,top)+'px'}
+if(window.visualViewport){window.visualViewport.addEventListener('resize',dhPlacePopupForKeyboard);window.visualViewport.addEventListener('scroll',dhPlacePopupForKeyboard)}
+
+function dhInitGoogle(){const raw=localStorage.getItem(DH_GOOGLE_STORAGE_KEY);if(raw){try{const c=JSON.parse(raw);if(c.clientId)dhGetEl('googleClientId').value=c.clientId}catch(_){}}dhGetEl('googleClientId')?.addEventListener('change',()=>{localStorage.setItem(DH_GOOGLE_STORAGE_KEY,JSON.stringify({clientId:dhGetEl('googleClientId').value.trim()}));dhInitTokenClient()});dhGetEl('btnGoogleSignIn')?.addEventListener('click',dhGoogleSignIn);dhGetEl('btnGoogleSignOut')?.addEventListener('click',dhGoogleSignOut);dhGetEl('btnDriveSave')?.addEventListener('click',dhSaveToDrive);dhGetEl('btnDriveLoad')?.addEventListener('click',dhLoadFromDrive);dhInitTokenClient()}
+function dhStatus(msg,ok=false){const e=dhGetEl('googleSyncStatus');if(e)e.textContent=msg;const b=dhGetEl('googleUserBadge');if(b&&!ok&&!b.textContent)b.style.display='none'}
+function dhInitTokenClient(){const id=dhGetEl('googleClientId')?.value.trim();if(!id||!window.google?.accounts?.oauth2){dhStatus('Chưa cấu hình Google Client ID.');return}window.dhTokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email openid profile',callback:r=>{if(r?.access_token){dhGoogleToken=r.access_token;dhFetchProfile();dhStatus('Đăng nhập Google thành công.',true)}}})}
+function dhGoogleSignIn(){dhInitTokenClient();if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
+function dhGoogleSignOut(){if(window.google?.accounts?.oauth2&&dhGoogleToken)google.accounts.oauth2.revoke(dhGoogleToken,()=>{});dhGoogleToken='';const b=dhGetEl('googleUserBadge');if(b){b.textContent='';b.style.display='none'}dhStatus('Đã đăng xuất Google.')}
+async function dhFetchProfile(){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+dhGoogleToken}});const m=await r.json();const b=dhGetEl('googleUserBadge');if(b){b.textContent='Đang đăng nhập: '+(m.email||m.name||'Google user');b.style.display='inline-block'}}catch(_){}}
+function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v1.9',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
+function dhApplyPayload(p){if(p.record&&typeof dhRecord!=='undefined')dhRecord=p.record;if(p.editable)for(const [id,v]of Object.entries(p.editable)){const e=dhGetEl(id);if(e)e.value=v}try{if(typeof dhRenderProfiles==='function')dhRenderProfiles()}catch(_){}if(typeof syncData==='function')syncData();if(typeof dhSaveDraft==='function')dhSaveDraft()}
+async function dhFindDriveFile(){const q=encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`,{headers:{Authorization:'Bearer '+dhGoogleToken}});const d=await r.json();return d.files?.[0]||null}
+async function dhSaveToDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const payload=dhPayload(),file=await dhFindDriveFile(),meta={name:DH_DRIVE_FILE_NAME,parents:['appDataFolder'],mimeType:'application/json'},boundary='-------314159265358979323846',delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--',body=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/json\r\n\r\n'+JSON.stringify(payload)+close,url=file?`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';const r=await fetch(url,{method:file?'PATCH':'POST',headers:{Authorization:'Bearer '+dhGoogleToken,'Content-Type':'multipart/related; boundary='+boundary},body});dhStatus(r.ok?'Đã lưu dữ liệu lên Google Drive.':'Lưu Google Drive chưa thành công.',r.ok)}
+async function dhLoadFromDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const f=await dhFindDriveFile();if(!f)return dhStatus('Chưa có dữ liệu đồng bộ trên Drive.');const r=await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:'Bearer '+dhGoogleToken}});if(!r.ok)return dhStatus('Không tải được dữ liệu từ Drive.');dhApplyPayload(await r.json());dhStatus('Đã tải dữ liệu từ Google Drive.',true)}
+
+(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhMakeEditable();dhBindPinch();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhInitGoogle()}}
+)();
 </script>
 
 <script>
