@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần Mềm Lập Biên Bản Hiện Trường - Dong Hui</title>
+    <!-- Thư viện hỗ trợ xuất Ảnh và Word chuẩn -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <style>
+        :root {
+            --primary-color: #003366;
+            --accent-color: #00509e;
+            --text-black: #000000;
+            --text-blue: #0066cc;
+            --bg-light: #f4f7fa;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-black);
+        }
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .control-panel {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.08);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-color);
+            position: relative;
+        }
+        
+        /* Nút chọn ngôn ngữ giao diện ở góc trên bên phải */
+        .ui-lang-container {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ui-lang-container label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin: 0;
+        }
+        .ui-lang-container select {
+            padding: 5px 8px;
+            font-size: 13px;
+            border: 1px solid #b0c4de;
+            border-radius: 4px;
+            background-color: #fff;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        h2 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            text-transform: uppercase; 
+            font-size: 22px; 
+            margin-top: 5px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            padding-right: 120px;
+            padding-left: 120px;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 18px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #d1d9e0;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13.5px;
+            color: #333;
+        }
+        select, input[type="text"], input[type="file"], textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #b0c4de;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #fafbfc;
+            transition: all 0.3s;
+        }
+        select:focus, input[type="text"]:focus, textarea:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        .col {
+            flex: 1;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button {
+            flex: 1;
+            padding: 12px 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-preview { background-color: #17a2b8; flex: 0 0 140px; }
+        .btn-update-lang { background-color: #007bff; flex: 0 0 240px; }
+        .btn-translate { background-color: #6f42c1; }
+        .btn-png { background-color: #e0a800; color: #000; }
+        .btn-pdf { background-color: #c82333; }
+        .btn-word { background-color: #218838; }
+        button:hover { opacity: 0.92; transform: translateY(-1px); }
+
+        /* Khung biên bản A4 tự động co giãn trang */
+        #invoice-preview-area {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm 10mm 10mm 20mm;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            position: relative;
+        }
+
+        .header-top {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+            min-height: 50px;
+        }
+        .logo-area {
+            position: absolute;
+            left: 0;
+            width: 120px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+        }
+        .logo-area img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .title-center-box {
+            width: 100%;
+            text-align: center;
+            padding: 0 130px;
+            box-sizing: border-box;
+        }
+        .doc-title-main { 
+            font-size: 16pt; 
+            font-weight: bold; 
+            color: #003366; 
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
+        .doc-title-sub { 
+            font-size: 14pt; 
+            font-weight: bold; 
+            color: var(--primary-color); 
+            text-transform: uppercase; 
+            white-space: nowrap;
+        }
+
+        table.invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 3px;
+        }
+        table.invoice-table th, table.invoice-table td {
+            border: 1px solid #000;
+            padding: 5px 8px;
+            vertical-align: top;
+            line-height: 1.3;
+            font-size: 12pt;
+        }
+        .text-black { color: var(--text-black); font-weight: bold; }
+        .text-blue { color: var(--text-blue); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .close-btn {
+            background: #dc3545;
+            color: #fff;
+            padding: 8px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        /* Định dạng ảnh đính kèm: Kéo rộng sát viền và CHỐNG CẮT NGANG bằng CSS page-break */
+        .preview-images-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .img-card-wrapper {
+            width: 100%;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .preview-images-grid img {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 380px;
+            object-fit: contain;
+            border: 1px solid #000;
+            border-radius: 3px;
+            background: #fff;
+            display: block;
+        }
+    
+/* Dong Hui v1.1 - preserve image proportions, export attachments on full A4 pages */
+.preview-images-grid img { width: 100% !important; height: auto !important; max-height: none !important; object-fit: contain !important; }
+@media (max-width: 840px) {
+ body {padding: 8px;} .control-panel {padding: 12px;} .row {flex-wrap:wrap;}
+ .row .col {min-width: 170px;} .ui-lang-container {position:static;justify-content:flex-end;}
+ h2 {padding: 0;font-size:19px;} .main-container {overflow-x:auto;}
+ #invoice-preview-area {margin-left: 0;}
+}
+
+
+        /* v1.6: no absolute positioning in signature table cells. */
+        .invoice-table .dh-signature-cell {
+            vertical-align: top;
+            padding: 5px 7px 6px;
+            position: static !important;
+            height: auto !important;
+            line-height: 1.5;
+        }
+        .invoice-table .dh-signature-inner {
+            min-height: 108px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 9px;
+        }
+        .invoice-table .dh-signature-title {
+            font-weight: bold;
+            color: #000;
+            display: block;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+        .invoice-table .dh-signature-foot {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: auto;
+            min-width: 0;
+        }
+        .invoice-table .dh-signature-name {
+            position: static !important;
+            text-align: center;
+            color: #0066cc;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+        .invoice-table .dh-signature-date {
+            position: static !important;
+            font-size: 11pt;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+        .dh-banner-slot {
+            width: 100%;
+            height: 105px;
+            margin: 0 auto 18px;
+            border: 1px dashed #b9c6d2;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 9px;
+            color: #82909c;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+        @media (max-width: 840px) {
+            .dh-banner-slot { height: 92px; margin-bottom: 14px; }
+        }
+</style>
+
+    <!-- Web/PWA deployment additions -->
+    <meta name="theme-color" content="#003366">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Dong Hui Thông Báo">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Reserved future advertising slot; deliberately outside the A4 document. -->
+    <div id="dh-banner-slot" class="dh-banner-slot" aria-label="Vị trí quảng cáo tương lai">
+      <span>Vị trí dành cho banner quảng cáo</span>
+    </div>
+    <div class="control-panel">
+        <!-- Nút chọn ngôn ngữ giao diện phần mềm ở góc trên bên phải -->
+        <div class="ui-lang-container">
+            <label id="lbl_ui_lang">Ngôn ngữ:</label>
+            <select id="uiLangSelect" onchange="syncData()">
+                <option value="vi" selected>Tiếng Việt</option>
+                <option value="en">English</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="ru">Русский</option>
+                <option value="th">ไทย</option>
+                <option value="in">हिन्दी</option>
+                <option value="ar">العربية</option>
+                <option value="es">Español</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+
+        <h2 id="ui_main_title">Phần Mềm Lập Biên Bản Hiện Trường</h2>
+
+        <div class="section-title" id="ui_sec1">1. Cấu Hình & Tùy Chọn Biên Bản</div>
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_doctype">Chọn Loại Biên Bản:</label>
+                <select id="docType" onchange="syncData()">
+                    <option value="tiendo" id="opt_tiendo">Thông Báo Chậm Tiến Độ (Tiến độ)</option>
+                    <option value="chatluong" id="opt_chatluong">Thông Báo Vi Phạm Chất Lượng (Chất lượng)</option>
+                    <option value="antoan" id="opt_antoan">Thông Báo Vi Phạm An Toàn (An toàn)</option>
+                </select>
+            </div>
+            <div class="form-group col" style="flex: 0 0 140px; display: flex; align-items: flex-end;">
+                <button type="button" class="btn-preview" id="ui_btn_sample" onclick="openModal()" style="height: 41px;">Xem Mẫu Gốc</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_langmode">Chế độ hiển thị Ngôn Ngữ:</label>
+                <select id="langMode" onchange="syncData()">
+                    <option value="bilingual" id="opt_bil">Song ngữ (Ngôn ngữ chọn + Ngôn ngữ gốc)</option>
+                    <option value="vi_only" id="opt_vio">Chỉ ngôn ngữ gốc</option>
+                    <option value="sub_only" id="opt_subo">Chỉ ngôn ngữ được chọn</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_sublang">Chọn Ngôn Ngữ Phụ:</label>
+                <select id="subLang" onchange="syncData()">
+                    <option value="ZH" id="sub_zh" selected>Tiếng Trung (ZH)</option>
+                    <option value="EN" id="sub_en">Tiếng Anh (EN)</option>
+                    <option value="FR" id="sub_fr">Tiếng Pháp (FR)</option>
+                    <option value="RU" id="sub_ru">Tiếng Nga (RU)</option>
+                    <option value="DE" id="sub_de">Tiếng Đức (DE)</option>
+                    <option value="JA" id="sub_ja">Tiếng Nhật (JA)</option>
+                    <option value="KO" id="sub_ko">Tiếng Hàn (KO)</option>
+                    <option value="TH" id="sub_th">Tiếng Thái (TH)</option>
+                    <option value="IN" id="sub_in">Tiếng Ấn Độ (Hindi)</option>
+                    <option value="AR" id="sub_ar">Tiếng Ả Rập (AR)</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; margin-bottom: 15px;">
+            <button type="button" class="btn-update-lang" id="ui_btn_updatelang" onclick="syncData()">Cập Nhật Ngôn Ngữ Phần Mềm</button>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_logo">Tải lên Logo công ty:</label>
+                <input type="file" id="logoInput" accept="image/*" onchange="loadLogo(event)">
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_apikey">API Key Dịch thuật (Tùy chọn):</label>
+                <input type="password" id="apiKey" autocomplete="off" placeholder="Dán API Key để dịch tự động...">
+                <label style="margin-top:7px;font-size:12px;font-weight:normal"><input type="checkbox" id="saveApiKey" style="width:auto"> Ghi nhớ API Key trên thiết bị này (không mã hóa)</label>
+            </div>
+        </div>
+
+        <div class="section-title" id="ui_sec2">2. Nhập Nội Dung Thông Báo (Chữ màu xanh)</div>
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_project">Tên công trình:</label>
+                <input type="text" id="in_congtrinh" value="Winner" oninput="syncData()" list="dh_project_suggestions">
+                <datalist id="dh_project_suggestions"></datalist>
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_item">Tên hạng mục:</label>
+                <input type="text" id="in_hangmuc" value="Nhà xưởng E4" oninput="syncData()">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_contractor">Đơn vị thi công:</label>
+                <input type="text" id="in_donvithicong" value="Đức Toàn" oninput="syncData()" list="dh_contractor_suggestions">
+                <datalist id="dh_contractor_suggestions"></datalist>
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_contractno">Mã số hợp đồng:</label>
+                <input type="text" id="in_hopdong" value="DH-DT 0321644" oninput="syncData()">
+            </div>
+        </div>
+        <div class="form-group" id="dh_saved_panel" style="border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff">
+            <strong style="color:#003366">Dữ liệu đã lưu / Saved profiles</strong>
+            <div class="row" style="margin-top:9px">
+                <div class="col"><label for="dh_saved_project">Chọn công trình đã lưu</label><select id="dh_saved_project"><option value="">-- Chọn công trình --</option></select></div>
+                <div class="col"><label for="dh_saved_contractor">Chọn nhà thầu đã lưu (tự điền mã hợp đồng)</label><select id="dh_saved_contractor"><option value="">-- Chọn nhà thầu --</option></select></div>
+            </div>
+            <div class="btn-group" style="margin-top:8px">
+                <button type="button" id="dh_save_profile" style="background:#218838">Lưu công trình và nhà thầu</button>
+                <button type="button" id="dh_manage_profile" style="background:#64748b">Quản lý / Xóa dữ liệu đã lưu</button>
+            </div>
+            <small id="dh_save_status" style="display:block;margin-top:6px;color:#475569" role="status">Thông tin nhập sẽ tự lưu trên thiết bị này.</small>
+        </div>
+        <div class="form-group">
+            <label id="ui_lbl_noticeno">Mã số thông báo:</label>
+            <input type="text" id="in_mathongbao" value="DH-WN-Tiendo-DucToan/2026.10.07" oninput="syncData()">
+        </div>
+        <div class="form-group">
+            <label id="ui_lbl_content">Nội dung chi tiết (Mỗi dòng một ý):</label>
+            <textarea id="in_noidung" oninput="syncData()">Nhà xưởng E4, Tầng 2, thi công bê tông dầm sàn.
+Tiến độ thi công bị chậm 4 ngày so với cam kết tiến độ.
+Đề nghị nhà thầu tăng cường nhân lực, tăng ca, đưa ra phương án đẩy tiến độ.
+Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến hành xử phạt theo hợp đồng.</textarea>
+        </div>
+        <div style="text-align: right; margin-bottom: 12px;">
+            <button type="button" class="btn-translate" id="ui_btn_trans" onclick="autoTranslateText()" style="width: auto; padding: 8px 16px; font-size: 14px;">Dịch Nội Dung Tự Động</button>
+        </div>
+
+        <!-- Ô TẢI LÊN ẢNH ĐÍNH KÈM -->
+        <div class="form-group">
+            <label id="ui_lbl_attach_file">Tải lên Ảnh chụp & Tài liệu đính kèm:</label>
+            <input type="file" id="attachInput" accept="image/*" multiple onchange="loadAttachments(event)">
+            <div id="attachmentStatus" role="status" aria-live="polite" style="margin-top:8px;color:#475569;font-size:14px;">Chưa chọn ảnh đính kèm.</div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_mgr">Giám đốc công trình ký:</label>
+                <input type="text" id="in_giamdoc" value="Wei Wei Jie" oninput="syncData()">
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_deputy">Phó tổng giám đốc ký:</label>
+                <input type="text" id="in_phogiamdoc" value="Shi Pu Liang" oninput="syncData()">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col">
+                <label id="ui_lbl_lead">Kỹ sư phụ trách chính ký:</label>
+                <input type="text" id="in_kysu" value="Phạm Hồng Tiến" oninput="syncData()">
+            </div>
+            <div class="form-group col">
+                <label id="ui_lbl_ack">Đơn vị thi công kí nhận:</label>
+                <input type="text" id="in_thicongky" value="Lê Đức Toàn" oninput="syncData()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label id="ui_lbl_date">Ngày lập biên bản:</label>
+            <input type="text" id="in_ngay" value="2026/10/08" oninput="syncData()">
+        </div>
+    </div>
+
+    <!-- KHU VỰC XUẤT FILE CHUẨN A4 -->
+    <div id="invoice-preview-area">
+        <div class="header-top">
+            <div class="logo-area" id="logoContainer">
+                <span style="font-weight: bold; color: #003366; font-size: 15pt;">DH CO.,LTD</span>
+            </div>
+            <div class="title-center-box">
+                <div class="doc-title-main" id="lbl_title_main">进度拖慢通知单</div>
+                <div class="doc-title-sub" id="lbl_title_sub">BIÊN BẢN THÔNG BÁO CHẬM TIẾN ĐỘ</div>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <tr>
+                <td style="width: 45%;" class="text-black" id="lbl_r1">工程名称 / Tên công trình:</td>
+                <td class="text-blue" id="out_congtrinh">Winner</td>
+            </tr>
+            <tr>
+                <td class="text-black" id="lbl_r2">项目名称 / Tên hạng mục:</td>
+                <td class="text-blue" id="out_hangmuc">Nhà xưởng E4</td>
+            </tr>
+            <tr>
+                <td class="text-black" id="lbl_r3">施工单位 / Đơn vị thi công:</td>
+                <td class="text-blue" id="out_donvithicong">Đức Toàn</td>
+            </tr>
+            <tr>
+                <td class="text-black" id="lbl_r4">合约编号 / Mã số hợp đồng:</td>
+                <td class="text-blue" id="out_hopdong">DH-DT 0321644</td>
+            </tr>
+            <tr>
+                <td class="text-black" id="lbl_r5">通知编号 / Mã số thông báo:</td>
+                <td class="text-blue" id="out_mathongbao">DH-WN-Tiendo-DucToan/2026.10.07</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="text-black" id="lbl_r6">通知编制依据 / Căn cứ thông báo:</span><br>
+                    <span id="out_cancu" style="line-height: 1.3; display: block; margin-top: 2px;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="padding-bottom: 6px;">
+                    <span class="text-black" id="lbl_r7">通知内容 / Nội dung thông báo:</span><br>
+                    <span class="text-blue" id="out_noidung" style="white-space: pre-line; display: block; min-height: 55px; font-size: 12pt; line-height: 1.35; margin: 0; padding: 0;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="dh-signature-cell"><div class="dh-signature-inner">
+                    <span class="dh-signature-title text-black" id="lbl_r8">项目经理签字 / Giám đốc công trình ký:</span>
+                    <div class="dh-signature-foot"><div class="dh-signature-name text-blue" id="out_giamdoc">Wei Wei Jie</div>
+                    <div class="dh-signature-date">
+                        <span class="text-black" id="lbl_date1">日期 / Ngày:</span> <span class="text-black">............/............/............</span>
+                    </div></div>
+                </div></td>
+                <td class="dh-signature-cell"><div class="dh-signature-inner">
+                    <span class="dh-signature-title text-black" id="lbl_r9">副总经理签字 / Phó tổng giám đốc ký:</span>
+                    <div class="dh-signature-foot"><div class="dh-signature-name text-blue" id="out_phogiamdoc">Shi Pu Liang</div>
+                    <div class="dh-signature-date">
+                        <span class="text-black" id="lbl_date2">日期 / Ngày:</span> <span class="text-black">............/............/............</span>
+                    </div></div>
+                </div></td>
+            </tr>
+            <tr>
+                <td class="dh-signature-cell"><div class="dh-signature-inner">
+                    <span class="dh-signature-title text-black" id="lbl_r10">主办工程师签字 / Kỹ sư phụ trách chính ký:</span>
+                    <div class="dh-signature-foot"><div class="dh-signature-name text-blue" id="out_kysu">Phạm Hồng Tiến</div>
+                    <div class="dh-signature-date">
+                        <span class="text-black" id="lbl_date3">日期 / Ngày:</span> <span id="out_ngay3" class="text-black">2026/10/08</span>
+                    </div></div>
+                </div></td>
+                <td class="dh-signature-cell"><div class="dh-signature-inner">
+                    <span class="dh-signature-title text-black" id="lbl_r11">施工单位签收 / Đơn vị thi công kí nhận:</span>
+                    <div class="dh-signature-foot"><div class="dh-signature-name text-blue" id="out_thicongky">Lê Đức Toàn</div>
+                    <div class="dh-signature-date">
+                        <span class="text-black" id="lbl_date4">日期 / Ngày:</span> <span class="text-black">............/............/............</span>
+                    </div></div>
+                </div></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="min-height: 80px; vertical-align: top;">
+                    <span class="text-black" id="lbl_attach">附带照片+文件 / Ảnh chụp + tài liệu đính kèm:</span>
+                    <div id="previewImagesContainer" class="preview-images-grid"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Nút xuất file -->
+    <div class="control-panel" style="margin-top: 25px;">
+        <div class="section-title" id="ui_sec3" style="margin-top: 0;">3. Xuất File & Hồ Sơ</div>
+        <div class="btn-group">
+            <button class="btn-png" id="ui_btn_png" onclick="exportMultiPagePNG()">Xuất Ảnh PNG (Nhiều trang)</button>
+            <button class="btn-pdf" id="ui_btn_pdf" onclick="exportMultiPagePDF()">Xuất File PDF (Nhiều trang)</button>
+            <button class="btn-word" id="ui_btn_word" onclick="exportWord()">Xuất File Word (.doc)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xem Mẫu Gốc -->
+<div id="sampleModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Mẫu Chuẩn</h3>
+        <p id="modalDesc" style="line-height: 1.5; text-align: left; background: #f8f9fa; padding: 10px; border-radius: 6px;"></p>
+        <button class="close-btn" id="ui_btn_close" onclick="closeModal()">Đóng</button>
+    </div>
+</div>
+
+<script>
+    const uiTexts = {
+        vi: {
+            title: "Phần Mềm Lập Biên Bản Hiện Trường",
+            langLabel: "Ngôn ngữ:",
+            sec1: "1. Cấu Hình & Tùy Chọn Biên Bản",
+            lblDocType: "Chọn Loại Biên Bản:",
+            btnSample: "Xem Mẫu Gốc",
+            lblLangMode: "Chế độ hiển thị Ngôn Ngữ:",
+            lblSubLang: "Chọn Ngôn Ngữ Phụ:",
+            btnUpdateLang: "Cập Nhật Ngôn Ngữ Phần Mềm",
+            lblLogo: "Tải lên Logo công ty:",
+            lblApiKey: "API Key Dịch thuật (Tùy chọn):",
+            sec2: "2. Nhập Nội Dung Thông Báo (Chữ màu xanh)",
+            lblProject: "Tên công trình:",
+            lblItem: "Tên hạng mục:",
+            lblContractor: "Đơn vị thi công:",
+            lblContractNo: "Mã số hợp đồng:",
+            lblNoticeNo: "Mã số thông báo:",
+            lblContent: "Nội dung chi tiết (Mỗi dòng một ý):",
+            btnTrans: "Dịch Nội Dung Tự Động",
+            lblAttachFile: "Tải lên Ảnh chụp & Tài liệu đính kèm:",
+            lblMgr: "Giám đốc công trình ký:",
+            lblDeputy: "Phó tổng giám đốc ký:",
+            lblLead: "Kỹ sư phụ trách chính ký:",
+            lblAck: "Đơn vị thi công kí nhận:",
+            lblDate: "Ngày lập biên bản:",
+            sec3: "3. Xuất File & Hồ Sơ",
+            btnPng: "Xuất Ảnh PNG (Nhiều trang)",
+            btnPdf: "Xuất File PDF (Nhiều trang)",
+            btnWord: "Xuất File Word (.doc)",
+            btnClose: "Đóng",
+            modalHead: "Mẫu Chuẩn Dong Hui",
+            optTiendo: "Thông Báo Chậm Tiến Độ (Tiến độ)",
+            optChatluong: "Thông Báo Vi Phạm Chất Lượng (Chất lượng)",
+            optAntoan: "Thông Báo Vi Phạm An Toàn (An toàn)",
+            optBil: "Song ngữ (Ngôn ngữ chọn + Tiếng Việt)",
+            optVio: "Chỉ tiếng Việt",
+            optSubo: "Chỉ ngôn ngữ được chọn",
+            apiPlaceholder: "Dán API Key để dịch tự động...",
+            subZH: "Tiếng Trung (ZH)", subEN: "Tiếng Anh (EN)", subFR: "Tiếng Pháp (FR)", subRU: "Tiếng Nga (RU)", subDE: "Tiếng Đức (DE)", subJA: "Tiếng Nhật (JA)", subKO: "Tiếng Hàn (KO)", subTH: "Tiếng Thái (TH)", subIN: "Tiếng Ấn Độ (Hindi)", subAR: "Tiếng Ả Rập (AR)"
+        },
+        en: {
+            title: "Field Report Software",
+            langLabel: "Language:",
+            sec1: "1. Configuration & Report Options",
+            lblDocType: "Select Report Type:",
+            btnSample: "View Sample",
+            lblLangMode: "Language Display Mode:",
+            lblSubLang: "Select Sub Language:",
+            btnUpdateLang: "Update Software Language",
+            lblLogo: "Upload Company Logo:",
+            lblApiKey: "Translation API Key:",
+            sec2: "2. Enter Notice Content",
+            lblProject: "Project Name:",
+            lblItem: "Item Name:",
+            lblContractor: "Contractor:",
+            lblContractNo: "Contract No.:",
+            lblNoticeNo: "Notice No.:",
+            lblContent: "Detailed Content:",
+            btnTrans: "Auto Translate",
+            lblAttachFile: "Upload Photos & Attached Documents:",
+            lblMgr: "Project Manager Signature:",
+            lblDeputy: "Deputy General Director Signature:",
+            lblLead: "Lead Engineer Signature:",
+            lblAck: "Contractor Acknowledgment:",
+            lblDate: "Report Date:",
+            sec3: "3. Export File & Records",
+            btnPng: "Export PNG (Multi-page)",
+            btnPdf: "Export PDF (Multi-page)",
+            btnWord: "Export Word (.doc)",
+            btnClose: "Close",
+            modalHead: "Dong Hui Standard Sample",
+            optTiendo: "Schedule Delay Notice",
+            optChatluong: "Quality Violation Notice",
+            optAntoan: "Safety Violation Notice",
+            optBil: "Bilingual (Selected + English)",
+            optVio: "English Only",
+            optSubo: "Selected Language Only",
+            apiPlaceholder: "Paste API Key to auto-translate...",
+            subZH: "Chinese (ZH)", subEN: "English (EN)", subFR: "French (FR)", subRU: "Russian (RU)", subDE: "German (DE)", subJA: "Japanese (JA)", subKO: "Korean (KO)", subTH: "Thai (TH)", subIN: "Hindi (IN)", subAR: "Arabic (AR)"
+        },
+        zh: {
+            title: "现场记录软件",
+            langLabel: "语言:",
+            sec1: "1. 配置与报告选项",
+            lblDocType: "选择报告类型:",
+            btnSample: "查看原样",
+            lblLangMode: "语言显示模式:",
+            lblSubLang: "选择副语言:",
+            btnUpdateLang: "更新软件语言",
+            lblLogo: "上传公司标志:",
+            lblApiKey: "翻译 API 密钥:",
+            sec2: "2. 输入通知内容",
+            lblProject: "工程名称:",
+            lblItem: "项目名称:",
+            lblContractor: "施工单位:",
+            lblContractNo: "合约编号:",
+            lblNoticeNo: "通知编号:",
+            lblContent: "详细内容:",
+            btnTrans: "自动翻译",
+            lblAttachFile: "上传照片和附件:",
+            lblMgr: "项目经理签字:",
+            lblDeputy: "副总经理签字:",
+            lblLead: "主办工程师签字:",
+            lblAck: "施工单位签收:",
+            lblDate: "日期:",
+            sec3: "3. 导出文件与档案",
+            btnPng: "导出 PNG (多页)",
+            btnPdf: "导出 PDF (多页)",
+            btnWord: "导出 Word (.doc)",
+            btnClose: "关闭",
+            modalHead: "东辉标准样本",
+            optTiendo: "进度拖慢通知单",
+            optChatluong: "质量违反通知单",
+            optAntoan: "安全违反通知单",
+            optBil: "双语 (所选语言 + 汉语)",
+            optVio: "仅汉语",
+            optSubo: "仅所选语言",
+            apiPlaceholder: "粘贴 API 密钥以自动翻译...",
+            subZH: "中文 (ZH)", subEN: "英语 (EN)", subFR: "法语 (FR)", subRU: "俄语 (RU)", subDE: "德语 (DE)", subJA: "日语 (JA)", subKO: "韩语 (KO)", subTH: "泰语 (TH)", subIN: "印地语 (Hindi)", subAR: "阿拉伯语 (AR)"
+        },
+        ja: {
+            title: "現場記録ソフトウェア",
+            langLabel: "言語:",
+            sec1: "1. 設定とレポートオプション",
+            lblDocType: "レポートタイプの選択:",
+            btnSample: "サンプル表示",
+            lblLangMode: "言語表示モード:",
+            lblSubLang: "サブ言語選択:",
+            btnUpdateLang: "ソフトウェア言語を更新",
+            lblLogo: "会社ロゴのアップロード:",
+            lblApiKey: "翻訳APIキー:",
+            sec2: "2. 通知内容の入力",
+            lblProject: "工事名称:",
+            lblItem: "工区名称:",
+            lblContractor: "施工業者:",
+            lblContractNo: "契約番号:",
+            lblNoticeNo: "通知番号:",
+            lblContent: "詳細内容:",
+            btnTrans: "自動翻訳",
+            lblAttachFile: "写真と添付書類のアップロード:",
+            lblMgr: "プロジェクトマネージャー署名:",
+            lblDeputy: "副総経理署名:",
+            lblLead: "主任技術者署名:",
+            lblAck: "施工業者受領署名:",
+            lblDate: "日付:",
+            sec3: "3. ファイルと記録のエクスポート",
+            btnPng: "PNGエクスポート (複数ページ)",
+            btnPdf: "PDFエクスポート (複数ページ)",
+            btnWord: "Wordエクスポート (.doc)",
+            btnClose: "閉じる",
+            modalHead: "ドンフィ標準サンプル",
+            optTiendo: "工期遅延通知書",
+            optChatluong: "品質違反通知書",
+            optAntoan: "安全違反通知書",
+            optBil: "バイリンガル (選択言語 + 日本語)",
+            optVio: "日本語のみ",
+            optSubo: "選択言語のみ",
+            apiPlaceholder: "APIキーを貼り付けて自動翻訳...",
+            subZH: "中国語 (ZH)", subEN: "英語 (EN)", subFR: "フランス語 (FR)", subRU: "ロシア語 (RU)", subDE: "ドイツ語 (DE)", subJA: "日本語 (JA)", subKO: "韓国語 (KO)", subTH: "タイ語 (TH)", subIN: "ヒンディー語 (IN)", subAR: "アラビア語 (AR)"
+        },
+        ko: {
+            title: "현장 기록 소프트웨어",
+            langLabel: "언어:",
+            sec1: "1. 구성 및 보고서 옵션",
+            lblDocType: "보고서 유형 선택:",
+            btnSample: "샘플 보기",
+            lblLangMode: "언어 표시 모드:",
+            lblSubLang: "보조 언어 선택:",
+            btnUpdateLang: "소프트웨어 언어 업데이트",
+            lblLogo: "회사 로고 업로드:",
+            lblApiKey: "번역 API 키:",
+            sec2: "2. 통지 내용 입력",
+            lblProject: "공사명:",
+            lblItem: "공종명:",
+            lblContractor: "시공사:",
+            lblContractNo: "계약번호:",
+            lblNoticeNo: "통보번호:",
+            lblContent: "상세 내용:",
+            btnTrans: "자동 번역",
+            lblAttachFile: "사진 및 첨부 문서 업로드:",
+            lblMgr: "현장소장 서명:",
+            lblDeputy: "부사장 서명:",
+            lblLead: "책임엔지니어 서명:",
+            lblAck: "시공사 확인:",
+            lblDate: "날짜:",
+            sec3: "3. 파일 및 기록 내보내기",
+            btnPng: "PNG 내보내기 (여러 페이지)",
+            btnPdf: "PDF 내보내기 (여러 페이지)",
+            btnWord: "Word 내보내기 (.doc)",
+            btnClose: "닫기",
+            modalHead: "동휘 표준 샘플",
+            optTiendo: "공기 지연 통지서",
+            optChatluong: "품질 위반 통지서",
+            optAntoan: "안전 위반 통지서",
+            optBil: "이중 언어 (선택 언어 + 한국어)",
+            optVio: "한국어 전용",
+            optSubo: "선택 언어 전용",
+            apiPlaceholder: "API 키를 붙여넣어 자동 번역...",
+            subZH: "중국어 (ZH)", subEN: "영어 (EN)", subFR: "프랑스어 (FR)", subRU: "러시아어 (RU)", subDE: "독일어 (DE)", subJA: "일본어 (JA)", subKO: "한국어 (KO)", subTH: "태국어 (TH)", subIN: "힌디어 (IN)", subAR: "아랍어 (AR)"
+        },
+        fr: {
+            title: "Logiciel de Rapport de Chantier",
+            langLabel: "Langue:",
+            sec1: "1. Configuration & Options",
+            lblDocType: "Sélectionner le type:",
+            btnSample: "Voir l'exemple",
+            lblLangMode: "Mode d'affichage:",
+            lblSubLang: "Sous-langue:",
+            btnUpdateLang: "Mettre à jour la langue",
+            lblLogo: "Logo de l'entreprise:",
+            lblApiKey: "Clé API Traduction:",
+            sec2: "2. Saisir le contenu",
+            lblProject: "Nom du projet:",
+            lblItem: "Nom de l'élément:",
+            lblContractor: "Entrepreneur:",
+            lblContractNo: "N° de contrat:",
+            lblNoticeNo: "N° d'avis:",
+            lblContent: "Contenu détaillé:",
+            btnTrans: "Traduction Auto",
+            lblAttachFile: "Télécharger des photos et des documents:",
+            lblMgr: "Signature Chef de Projet:",
+            lblDeputy: "Signature DGA:",
+            lblLead: "Signature Ingénieur:",
+            lblAck: "Reconnaissance de l'entrepreneur:",
+            lblDate: "Date:",
+            sec3: "3. Exporter",
+            btnPng: "Exporter PNG (Multi-page)",
+            btnPdf: "Exporter PDF (Multi-page)",
+            btnWord: "Exporter Word (.doc)",
+            btnClose: "Fermer",
+            modalHead: "Modèle Standard Dong Hui",
+            optTiendo: "Avis de retard de planning",
+            optChatluong: "Avis de violation de qualité",
+            optAntoan: "Avis de violation de sécurité",
+            optBil: "Bilingue (Sélectionné + Français)",
+            optVio: "Français uniquement",
+            optSubo: "Langue sélectionnée uniquement",
+            apiPlaceholder: "Coller la clé API...",
+            subZH: "Chinois (ZH)", subEN: "Anglais (EN)", subFR: "Français (FR)", subRU: "Russe (RU)", subDE: "Allemand (DE)", subJA: "Japonais (JA)", subKO: "Coréen (KO)", subTH: "Thaï (TH)", subIN: "Hindi (IN)", subAR: "Arabe (AR)"
+        },
+        de: {
+            title: "Baustellenbericht-Software",
+            langLabel: "Sprache:",
+            sec1: "1. Konfiguration & Optionen",
+            lblDocType: "Berichtstyp auswählen:",
+            btnSample: "Muster anzeigen",
+            lblLangMode: "Anzeigemodus:",
+            lblSubLang: "Zweitsprache:",
+            btnUpdateLang: "Software-Sprache aktualisieren",
+            lblLogo: "Firmenlogo hochladen:",
+            lblApiKey: "Übersetzungs-API-Key:",
+            sec2: "2. Inhalt eingeben",
+            lblProject: "Projektname:",
+            lblItem: "Objektname:",
+            lblContractor: "Auftragnehmer:",
+            lblContractNo: "Vertrags-Nr.:",
+            lblNoticeNo: "Mitteilungs-Nr.:",
+            lblContent: "Detaillierter Inhalt:",
+            btnTrans: "Automatisch übersetzen",
+            lblAttachFile: "Fotos & Dokumente hochladen:",
+            lblMgr: "Unterschrift Projektleiter:",
+            lblDeputy: "Unterschrift Stv. GF:",
+            lblLead: "Unterschrift Ingenieur:",
+            lblAck: "Bestätigung Auftragnehmer:",
+            lblDate: "Datum:",
+            sec3: "3. Datei exportieren",
+            btnPng: "PNG exportieren (Mehrseitig)",
+            btnPdf: "PDF exportieren (Mehrseitig)",
+            btnWord: "Word exportieren (.doc)",
+            btnClose: "Schließen",
+            modalHead: "Dong Hui Standardmuster",
+            optTiendo: "Bauzeitverzögerung",
+            optChatluong: "Qualitätsverletzung",
+            optAntoan: "Sicherheitsverletzung",
+            optBil: "Zweisprachig (Auswahl + Deutsch)",
+            optVio: "Nur Deutsch",
+            optSubo: "Nur ausgewählte Sprache",
+            apiPlaceholder: "API-Key einfügen...",
+            subZH: "Chinesisch (ZH)", subEN: "Englisch (EN)", subFR: "Französisch (FR)", subRU: "Russisch (RU)", subDE: "Deutsch (DE)", subJA: "Japanisch (JA)", subKO: "Koreanisch (KO)", subTH: "Thailändisch (TH)", subIN: "Hindi (IN)", subAR: "Arabisch (AR)"
+        },
+        ru: {
+            title: "Программа для отчетов",
+            langLabel: "Язык:",
+            sec1: "1. Конфигурация и опции",
+            lblDocType: "Тип отчета:",
+            btnSample: "Образец",
+            lblLangMode: "Режим языка:",
+            lblSubLang: "Доп. язык:",
+            btnUpdateLang: "Обновить язык интерфейса",
+            lblLogo: "Логотип компании:",
+            lblApiKey: "API ключ перевода:",
+            sec2: "2. Введите текст уведомления",
+            lblProject: "Название проекта:",
+            lblItem: "Объект:",
+            lblContractor: "Подрядчик:",
+            lblContractNo: "Договор №:",
+            lblNoticeNo: "Уведомление №:",
+            lblContent: "Содержание:",
+            btnTrans: "Автоперевод",
+            lblAttachFile: "Загрузить фото и документы:",
+            lblMgr: "Подпись Руководителя:",
+            lblDeputy: "Подпись Зам. ген. дир.:",
+            lblLead: "Подпись Инженера:",
+            lblAck: "Подпись Подрядчика:",
+            lblDate: "Дата:",
+            sec3: "3. Экспорт файла",
+            btnPng: "Экспорт PNG (Многостр.)",
+            btnPdf: "Экспорт PDF (Многостр.)",
+            btnWord: "Экспорт Word (.doc)",
+            btnClose: "Закрыть",
+            modalHead: "Стандартный образец Dong Hui",
+            optTiendo: "Уведомление об отставке от графика",
+            optChatluong: "Уведомление о нарушении качества",
+            optAntoan: "Уведомление о нарушении ТБ",
+            optBil: "Двуязычный (Выбранный + Русский)",
+            optVio: "Только русский",
+            optSubo: "Только выбранный язык",
+            apiPlaceholder: "Вставьте API ключ...",
+            subZH: "Китайский (ZH)", subEN: "Английский (EN)", subFR: "Французский (FR)", subRU: "Русский (RU)", subDE: "Немецкий (DE)", subJA: "Японский (JA)", subKO: "Корейский (KO)", subTH: "Тайский (TH)", subIN: "Хинди (IN)", subAR: "Арабский (AR)"
+        },
+        th: {
+            title: "ซอฟต์แวร์รายงานหน้างาน",
+            langLabel: "ภาษา:",
+            sec1: "1. การกำหนดค่าและตัวเลือก",
+            lblDocType: "เลือกประเภทรายงาน:",
+            btnSample: "ดูตัวอย่าง",
+            lblLangMode: "โหมดการแสดงภาษา:",
+            lblSubLang: "ภาษาสำรอง:",
+            btnUpdateLang: "อัปเดตภาษาของซอฟต์แวร์",
+            lblLogo: "อัปโหลดโลโก้:",
+            lblApiKey: "API Key แปลภาษา:",
+            sec2: "2. กรอกเนื้อหาแจ้ง",
+            lblProject: "ชื่อโครงการ:",
+            lblItem: "ชื่องานย่อย:",
+            lblContractor: "ผู้รับเหมา:",
+            lblContractNo: "เลขที่สัญญา:",
+            lblNoticeNo: "เลขที่หนังสือแจ้ง:",
+            lblContent: "เนื้อหา:",
+            btnTrans: "แปลอัตโนมัติ",
+            lblAttachFile: "อัปโหลดรูปภาพและเอกสาร:",
+            lblMgr: "ลายมือชื่อผู้จัดการโครงการ:",
+            lblDeputy: "ลายมือชื่อรองกรรมการ:",
+            lblLead: "ลายมือชื่อวิศวกร:",
+            lblAck: "ลายมือชื่อผู้รับเหมา:",
+            lblDate: "วันที่:",
+            sec3: "3. ส่งออกไฟล์",
+            btnPng: "ส่งออก PNG (หลายหน้า)",
+            btnPdf: "ส่งออก PDF (หลายหน้า)",
+            btnWord: "ส่งออก Word (.doc)",
+            btnClose: "ปิด",
+            modalHead: "ตัวอย่างมาตรฐาน Dong Hui",
+            optTiendo: "หนังสือแจ้งความล่าช้าของงาน",
+            optChatluong: "หนังสือแจ้งการละเมิดคุณภาพ",
+            optAntoan: "หนังสือแจ้งการละเมิดความปลอดภัย",
+            optBil: "สองภาษา (ภาษาที่เลือก + ไทย)",
+            optVio: "ภาษาไทยเท่านั้น",
+            optSubo: "ภาษาที่เลือกเท่านั้น",
+            apiPlaceholder: "วาง API Key...",
+            subZH: "จีน (ZH)", subEN: "อังกฤษ (EN)", subFR: "ฝรั่งเศส (FR)", subRU: "รัสเซีย (RU)", subDE: "เยอรมัน (DE)", subJA: "ญี่ปุ่น (JA)", subKO: "เกาหลี (TH)", subTH: "ไทย (TH)", subIN: "ฮินดี (IN)", subAR: "อาหรับ (AR)"
+        },
+        in: {
+            title: "फील्ड रिपोर्ट सॉफ्टवेयर",
+            langLabel: "भाषा:",
+            sec1: "1. कॉन्फ़िगरेशन और विकल्प",
+            lblDocType: "रिपोर्ट प्रकार चुनें:",
+            btnSample: "नमूना देखें",
+            lblLangMode: "भाषा प्रदर्शन मोड:",
+            lblSubLang: "उप-भाषा:",
+            btnUpdateLang: "सॉफ्टवेयर भाषा अपडेट करें",
+            lblLogo: "कंपनी लोगो अपलोड करें:",
+            lblApiKey: "अनुवाद API कुंजी:",
+            sec2: "2. सामग्री दर्ज करें",
+            lblProject: "परियोजना का नाम:",
+            lblItem: "खंड का नाम:",
+            lblContractor: "ठेकेदार:",
+            lblContractNo: "अनुबंध संख्या:",
+            lblNoticeNo: "सूचना संख्या:",
+            lblContent: "सामग्री:",
+            btnTrans: "स्वचालित अनुवाद",
+            lblAttachFile: "तस्वीरें और दस्तावेज़ अपलोड करें:",
+            lblMgr: "परियोजना प्रबंधक हस्ताक्षर:",
+            lblDeputy: "उप महाप्रबंधक हस्ताक्षर:",
+            lblLead: "मुख्य अभियंता हस्ताक्षर:",
+            lblAck: "ठेकेदार पावती:",
+            lblDate: "दिनांक:",
+            sec3: "3. फ़ाइल निर्यात करें",
+            btnPng: "PNG निर्यात करें (बहु-पृष्ठ)",
+            btnPdf: "PDF निर्यात करें (बहु-पृष्ठ)",
+            btnWord: "Word निर्यात करें (.doc)",
+            btnClose: "बंद करें",
+            modalHead: "डोंग हुई मानक नमूना",
+            optTiendo: "निर्माण में देरी की सूचना",
+            optChatluong: "गुणवत्ता उल्लंघन की सूचना",
+            optAntoan: "सुरक्षा उल्लंघन की सूचना",
+            optBil: "द्विभाषी (चयनित + हिंदी)",
+            optVio: "केवल हिंदी",
+            optSubo: "केवल चयनित भाषा",
+            apiPlaceholder: "API कुंजी पेस्ट करें...",
+            subZH: "चीनी (ZH)", subEN: "अंग्रेज़ी (EN)", subFR: "फ़्रेंच (FR)", subRU: "रूसी (RU)", subDE: "जर्मन (DE)", subJA: "जापानी (JA)", subKO: "कोरियाई (KO)", subTH: "थाई (TH)", subIN: "हिन्दी (IN)", subAR: "अरबी (AR)"
+        },
+        ar: {
+            title: "برنامج تقارير الموقع",
+            langLabel: "اللغة:",
+            sec1: "1. الإعدادات والخيارات",
+            lblDocType: "اختر نوع التقرير:",
+            btnSample: "عرض النموذج",
+            lblLangMode: "وضع عرض اللغات:",
+            lblSubLang: "اللغة الفرعية:",
+            btnUpdateLang: "تحديث لغة البرنامج",
+            lblLogo: "تحميل شعار الشركة:",
+            lblApiKey: "مفتاح الترجمة API:",
+            sec2: "2. أدخل محتوى الإشعار",
+            lblProject: "اسم المشروع:",
+            lblItem: "اسم البند:",
+            lblContractor: "المقاول:",
+            lblContractNo: "رقم العقد:",
+            lblNoticeNo: "رقم الإشعار:",
+            lblContent: "المحتوى المفصل:",
+            btnTrans: "ترجمة تلقائية",
+            lblAttachFile: "تحميل الصور والمستندات:",
+            lblMgr: "توقيع مدير المشروع:",
+            lblDeputy: "توقيع نائب المدير:",
+            lblLead: "توقيع المهندس:",
+            lblAck: "إقرار المقاول:",
+            lblDate: "التاريخ:",
+            sec3: "3. تصدير الملفات",
+            btnPng: "تصدير PNG (عدة صفحات)",
+            btnPdf: "تصدير PDF (عدة صفحات)",
+            btnWord: "تصدير Word (.doc)",
+            btnClose: "إغلاق",
+            modalHead: "نموذج دونغ هوي القياسي",
+            optTiendo: "إشعار تأخير المشروع",
+            optChatluong: "إشعار مخالفة الجودة",
+            optAntoan: "إشعار مخالفة السلامة",
+            optBil: "ثنائي اللغة (المختار + العربية)",
+            optVio: "العربية فقط",
+            optSubo: "اللغة المختارة فقط",
+            apiPlaceholder: "الصق مفتاح API...",
+            subZH: "الصينية (ZH)", subEN: "الإنجليزية (EN)", subFR: "الفرنسية (FR)", subRU: "الروسية (RU)", subDE: "الألمانية (DE)", subJA: "اليابانية (JA)", subKO: "الكورية (KO)", subTH: "التايلاندية (TH)", subIN: "الهندية (IN)", subAR: "العربية (AR)"
+        },
+        es: {
+            title: "Software de Informes de Campo",
+            langLabel: "Idioma:",
+            sec1: "1. Configuración y Opciones",
+            lblDocType: "Seleccionar tipo:",
+            btnSample: "Ver muestra",
+            lblLangMode: "Modo de visualización:",
+            lblSubLang: "Subidioma:",
+            btnUpdateLang: "Actualizar idioma",
+            lblLogo: "Subir logotipo:",
+            lblApiKey: "Clave API de traducción:",
+            sec2: "2. Ingresar contenido",
+            lblProject: "Nombre del proyecto:",
+            lblItem: "Nombre del ítem:",
+            lblContractor: "Contratista:",
+            lblContractNo: "N° de contrato:",
+            lblNoticeNo: "N° de aviso:",
+            lblContent: "Contenido detallado:",
+            btnTrans: "Traducción automática",
+            lblAttachFile: "Subir fotos y documentos:",
+            lblMgr: "Firma Gerente de Proyecto:",
+            lblDeputy: "Firma Subdirector:",
+            lblLead: "Firma Ingeniero Principal:",
+            lblAck: "Reconocimiento del contratista:",
+            lblDate: "Fecha:",
+            sec3: "3. Exportar archivo",
+            btnPng: "Exportar PNG (Multipage)",
+            btnPdf: "Exportar PDF (Multipage)",
+            btnWord: "Exportar Word (.doc)",
+            btnClose: "Cerrar",
+            modalHead: "Muestra Estándar Dong Hui",
+            optTiendo: "Aviso de retraso de cronograma",
+            optChatluong: "Aviso de violación de calidad",
+            optAntoan: "Aviso de violación de seguridad",
+            optBil: "Bilingüe (Seleccionado + Español)",
+            optVio: "Solo español",
+            optSubo: "Solo idioma seleccionado",
+            apiPlaceholder: "Pegar clave API...",
+            subZH: "Chino (ZH)", subEN: "Inglés (EN)", subFR: "Francés (FR)", subRU: "Ruso (RU)", subDE: "Alemán (DE)", subJA: "Japonés (JA)", subKO: "Coreano (KO)", subTH: "Tailandés (TH)", subIN: "Hindi (IN)", subAR: "Árabe (AR)"
+        },
+        pt: {
+            title: "Software de Relatório de Campo",
+            langLabel: "Idioma:",
+            sec1: "1. Configuração e Opções",
+            lblDocType: "Selecionar tipo:",
+            btnSample: "Ver modelo",
+            lblLangMode: "Modo de exibição:",
+            lblSubLang: "Sub-idioma:",
+            btnUpdateLang: "Atualizar idioma",
+            lblLogo: "Carregar logotipo:",
+            lblApiKey: "Chave API de tradução:",
+            sec2: "2. Inserir conteúdo",
+            lblProject: "Nome do projeto:",
+            lblItem: "Nome do item:",
+            lblContractor: "Empreiteiro:",
+            lblContractNo: "N° do contrato:",
+            lblNoticeNo: "N° do aviso:",
+            lblContent: "Conteúdo detalhado:",
+            btnTrans: "Tradução automática",
+            lblAttachFile: "Carregar fotos e documentos:",
+            lblMgr: "Assinatura Gerente de Projeto:",
+            lblDeputy: "Assinatura Diretor Adjunto:",
+            lblLead: "Assinatura Engenheiro Principal:",
+            lblAck: "Reconhecimento do empreiteiro:",
+            lblDate: "Data:",
+            sec3: "3. Exportar arquivo",
+            btnPng: "Exportar PNG (Multi-página)",
+            btnPdf: "Exportar PDF (Multi-página)",
+            btnWord: "Exportar Word (.doc)",
+            btnClose: "Fechar",
+            modalHead: "Modelo Padrão Dong Hui",
+            optTiendo: "Aviso de atraso de cronograma",
+            optChatluong: "Aviso de violação de qualidade",
+            optAntoan: "Aviso de violação de segurança",
+            optBil: "Bilíngue (Selecionado + Português)",
+            optVio: "Apenas português",
+            optSubo: "Apenas idioma seleccionado",
+            apiPlaceholder: "Colar chave API...",
+            subZH: "Chinês (ZH)", subEN: "Inglês (EN)", subFR: "Francês (FR)", subRU: "Russo (RU)", subDE: "Alemão (DE)", subJA: "Japonés (JA)", subKO: "Coreano (KO)", subTH: "Tailandés (TH)", subIN: "Hindi (IN)", subAR: "Árabe (AR)"
+        }
+    };
+
+    const dict = {
+        ZH: {
+            tiendo: "进度拖慢通知单", chatluong: "质量违反通知单", antoan: "安全违反通知单",
+            r1: "工程名称", r2: "项目名称", r3: "施工单位", r4: "合约编号", r5: "通知编号",
+            r6: "通知编制依据", r7: "通知内容",
+            r8: "项目经理签字", r9: "副总经理签字", r10: "主办工程师签字", r11: "施工单位签收",
+            date: "日期", attach: "附带照片+文件",
+            cancu_tiendo: ["1. 合同中进度有关的条款,", "2. 分包商签署的施工进度承诺,", "3. 实际施工进度."],
+            cancu_chatluong: ["1. 合同中质量有关的条款,", "2. 技术交底文件,", "3. 施工质量问题清单表."],
+            cancu_antoan: ["1. 合同中安全有关的条款,", "2. 安全交底文件,", "3. 施工安全问题清单表."]
+        },
+        EN: {
+            tiendo: "SCHEDULE DELAY NOTICE", chatluong: "QUALITY VIOLATION NOTICE", antoan: "SAFETY VIOLATION NOTICE",
+            r1: "Project Name", r2: "Item Name", r3: "Contractor", r4: "Contract No.", r5: "Notice No.",
+            r6: "Basis of Notice", r7: "Notice Content",
+            r8: "Project Manager Signature", r9: "Deputy General Director Signature", r10: "Lead Engineer Signature", r11: "Contractor Acknowledgment",
+            date: "Date", attach: "Photos + Attached Documents",
+            cancu_tiendo: ["1. Contract clauses regarding schedule,", "2. Contractor's schedule commitment,", "3. Actual construction progress."],
+            cancu_chatluong: ["1. Contract clauses regarding quality,", "2. Technical handover documents,", "3. Quality defect checklist."],
+            cancu_antoan: ["1. Contract clauses regarding safety,", "2. Technical handover documents,", "3. Safety hazard checklist."]
+        },
+        FR: {
+            tiendo: "AVIS DE RETARD DE PLANNING", chatluong: "AVIS DE VIOLATION DE QUALITÉ", antoan: "AVIS DE VIOLATION DE SÉCURITÉ",
+            r1: "Nom du projet", r2: "Nom de l'élément", r3: "Entrepreneur", r4: "N° de contrat", r5: "N° d'avis",
+            r6: "Base de l'avis", r7: "Contenu de l'avis",
+            r8: "Signature du Chef de Projet", r9: "Signature du DGA", r10: "Signature de l'Ingénieur Principal", r11: "Reconnaissance de l'entrepreneur",
+            date: "Date", attach: "Photos + Documents joints",
+            cancu_tiendo: ["1. Clauses contractuelles de planning,", "2. Engagement de planning,", "3. Avancement réel."],
+            cancu_chatluong: ["1. Clauses contractuelles de qualité,", "2. Documents techniques,", "3. Liste des défauts de qualité."],
+            cancu_antoan: ["1. Clauses contractuelles de sécurité,", "2. Documents techniques,", "3. Liste des risques de sécurité."]
+        },
+        RU: {
+            tiendo: "УВЕДОМЛЕНИЕ ОБ ОТСТАВКЕ ОТ ГРАФИКА", chatluong: "УВЕДОМЛЕНИЕ О НАРУШЕНИИ КАЧЕСТВА", antoan: "УВЕДОМЛЕНИЕ О НАРУШЕНИИ ТБ",
+            r1: "Название проекта", r2: "Наименование объекта", r3: "Подрядчик", r4: "Договор №", r5: "Уведомление №",
+            r6: "Основание", r7: "Содержание",
+            r8: "Подпись Руководителя проекта", r9: "Подпись Зам. ген. директора", r10: "Подпись Главного инженера", r11: "Подпись подрядчика",
+            date: "Дата", attach: "Фото + Документы",
+            cancu_tiendo: ["1. Пункты договора о сроках,", "2. График подрядчика,", "3. Фактический прогресс."],
+            cancu_chatluong: ["1. Пункты договора о качестве,", "2. Техническая документация,", "3. Чек-лист дефектов."],
+            cancu_antoan: ["1. Пункты договора о безопасности,", "2. Техническая документация,", "3. Чек-лист нарушений ТБ."]
+        },
+        DE: {
+            tiendo: "BAUZEITVERZÖGERUNG", chatluong: "QUALITÄTSVERLETZUNG", antoan: "SICHERHEITSVERLETZUNG",
+            r1: "Projektname", r2: "Projektteil", r3: "Auftragnehmer", r4: "Vertrags-Nr.", r5: "Mitteilungs-Nr.",
+            r6: "Grundlage", r7: "Inhalt",
+            r8: "Unterschrift Projektleiter", r9: "Unterschrift Stv. Geschäftsführer", r10: "Unterschrift Leitender Ingenieur", r11: "Bestätigung Auftragnehmer",
+            date: "Datum", attach: "Fotos + Dokumente",
+            cancu_tiendo: ["1. Vertragsbestimmungen zum Zeitplan,", "2. Verpflichtung des Auftragnehmers,", "3. Tatsächlicher Baufortschritt."],
+            cancu_chatluong: ["1. Vertragsbestimmungen zur Qualität,", "2. Technische Übergabedokumente,", "3. Mängelliste."],
+            cancu_antoan: ["1. Vertragsbestimmungen zur Sicherheit,", "2. Technische Übergabedokumente,", "3. Sicherheitscheckliste."]
+        },
+        JA: {
+            tiendo: "工期遅延通知書", chatluong: "品質違反通知書", antoan: "安全違反通知書",
+            r1: "工事名称", r2: "工区名称", r3: "施工業者", r4: "契約番号", r5: "通知番号",
+            r6: "通知根拠", r7: "通知内容",
+            r8: "プロジェクトマネージャー署名", r9: "副総経理署名", r10: "主任技術者署名", r11: "施工業者受領署名",
+            date: "日付", attach: "写真＋添付書類",
+            cancu_tiendo: ["1. 契約書の工期条項、", "2. 施工計画書、", "3. 実際の施工進捗。"],
+            cancu_chatluong: ["1. 契約書の品質条項、", "2. 技術引き渡し書類、", "3. 品質不具合チェックリスト。"],
+            cancu_antoan: ["1. 契約書の安全条項、", "2. 技術引き渡し書類、", "3. 安全危険チェックリスト。"]
+        },
+        KO: {
+            tiendo: "공기 지연 통지서", chatluong: "품질 위반 통지서", antoan: "안전 위반 통지서",
+            r1: "공사명", r2: "공종명", r3: "시공사", r4: "계약번호", r5: "통보번호",
+            r6: "통보 근거", r7: "통보 내용",
+            r8: "현장소장 서명", r9: "부사장 서명", r10: "책임엔지니어 서명", r11: "시공사 확인",
+            date: "날짜", attach: "사진 + 첨부서류",
+            cancu_tiendo: ["1. 계약서 공정 조항,", "2. 시공사의 공정 이행 각서,", "3. 실제 시공 진척도."],
+            cancu_chatluong: ["1. 계약서 품질 조항,", "2. 기술 인수도 문서,", "3. 품질 결함 체크리스트."],
+            cancu_antoan: ["1. 계약서 안전 조항,", "2. 기술 인수도 문서,", "3. 안전 위험 체크리스트."]
+        },
+        TH: {
+            tiendo: "หนังสือแจ้งความล่าช้าของงาน", chatluong: "หนังสือแจ้งการละเมิดคุณภาพ", antoan: "หนังสือแจ้งการละเมิดความปลอดภัย",
+            r1: "ชื่อโครงการ", r2: "ชื่องานย่อย", r3: "ผู้รับเหมา", r4: "เลขที่สัญญา", r5: "เลขที่หนังสือแจ้ง",
+            r6: "อ้างอิงตาม", r7: "เนื้อหาแจ้ง",
+            r8: "ลายมือชื่อผู้จัดการโครงการ", r9: "ลายมือชื่อรองกรรมการผู้จัดการ", r10: "ลายมือชื่อวิศวกรควบคุม", r11: "ลายมือชื่อผู้รับเหมา",
+            date: "วันที่", attach: "รูปถ่าย + เอกสารแนบ",
+            cancu_tiendo: ["1. ข้อสัญญาเกี่ยวกับกำหนดเวลา,", "2. แผนงานของผู้รับเหมา,", "3. ความคืบหน้าหน้างานจริง."],
+            cancu_chatluong: ["1. ข้อสัญญาเกี่ยวกับคุณภาพ,", "2. เอกสารส่งมอบงาน,", "3. ตารางตรวจสอบข้อบกพร่อง."],
+            cancu_antoan: ["1. ข้อสัญญาเกี่ยวกับความปลอดภัย,", "2. เอกสารส่งมอบงาน,", "3. ตารางตรวจสอบความปลอดภัย."]
+        },
+        IN: {
+            tiendo: "निर्माण में देरी की सूचना", chatluong: "गुणवत्ता उल्लंघन की सूचना", antoan: "सुरक्षा उल्लंघन की सूचना",
+            r1: "परियोजना का नाम", r2: "खंड का नाम", r3: "ठेकेदार", r4: "अनुबंध संख्या", r5: "सूचना संख्या",
+            r6: "सूचना का आधार", r7: "सूचना सामग्री",
+            r8: "परियोजना प्रबंधक हस्ताक्षर", r9: "उप महाप्रबंधक हस्ताक्षर", r10: "मुख्य अभियंता हस्ताक्षर", r11: "ठेकेदार पावती",
+            date: "दिनांक", attach: "तस्वीरें + संलग्न दस्तावेज",
+            cancu_tiendo: ["1. समय-सारणी संबंधी अनुबंध खंड,", "2. ठेकेदार की प्रतिबद्धता,", "3. वास्तविक निर्माण प्रगति."],
+            cancu_chatluong: ["1. गुणवत्ता संबंधी अनुबंध खंड,", "2. तकनीकी दस्तावेज,", "3. गुणवत्ता दोष चेकलिस्ट."],
+            cancu_antoan: ["1. सुरक्षा संबंधी अनुबंध खंड,", "2. तकनीकी दस्तावेज,", "3. सुरक्षा जोखिम चेकलिस्ट."]
+        },
+        AR: {
+            tiendo: "إشعار تأخير المشروع", chatluong: "إشعار مخالفة الجودة", antoan: "إشعار مخالفة السلامة",
+            r1: "اسم المشروع", r2: "اسم البند", r3: "المقاول", r4: "رقم العقد", r5: "رقم الإشعار",
+            r6: "أساس الإشعار", r7: "محتوى الإشعار",
+            r8: "توقيع مدير المشروع", r9: "توقيع نائب المدير العام", r10: "توقيع المهندس الرئيسي", r11: "إقرار المقاول",
+            date: "التاريخ", attach: "صور + مستندات مرفقة",
+            cancu_tiendo: ["1. بنود العقد المتعلقة بالجدول الزمني,", "2. التزام المقاول بالجدول الزمني,", "3. تقدم العمل الفعلي."],
+            cancu_chatluong: ["1. بنود العقد المتعلقة بالجودة,", "2. مستندات التسليم الفني,", "3. قائمة عيوب الجودة."],
+            cancu_antoan: ["1. بنود العقد المتعلقة بالسلامة,", "2. مستندات التسليم الفني,", "3. قائمة فحص مخاطر السلامة."]
+        },
+        ES: {
+            tiendo: "AVISO DE RETRASO DE CRONOGRAMA", chatluong: "AVISO DE VIOLACIÓN DE CALIDAD", antoan: "AVISO DE VIOLACIÓN DE SEGURIDAD",
+            r1: "Nombre del Proyecto", r2: "Nombre del Ítem", r3: "Contratista", r4: "N° de Contrato", r5: "N° de Aviso",
+            r6: "Base del Aviso", r7: "Contenido del Aviso",
+            r8: "Firma del Gerente de Proyecto", r9: "Firma del Director Adjunto", r10: "Firma del Ingeniero Principal", r11: "Reconocimiento del Contratista",
+            date: "Fecha", attach: "Fotos + Documentos adjuntos",
+            cancu_tiendo: ["1. Cláusulas contractuales sobre cronograma,", "2. Compromiso del contratista,", "3. Progreso real de construcción."],
+            cancu_chatluong: ["1. Cláusulas contractuales sobre calidad,", "2. Documentos de entrega técnica,", "3. Lista de verificación de calidad."],
+            cancu_antoan: ["1. Cláusulas contractuales sobre seguridad,", "2. Documentos de entrega técnica,", "3. Lista de verificación de seguridad."]
+        },
+        PT: {
+            tiendo: "AVISO DE ATRASO DE CRONOGRAMA", chatluong: "AVISO DE VIOLAÇÃO DE QUALIDADE", antoan: "AVISO DE VIOLAÇÃO DE SEGURANÇA",
+            r1: "Nome do Projeto", r2: "Nome do Item", r3: "Empreiteiro", r4: "N° do Contrato", r5: "N° do Aviso",
+            r6: "Base do Aviso", r7: "Conteúdo do Aviso",
+            r8: "Assinatura do Gerente de Projeto", r9: "Assinatura do Diretor Adjunto", r10: "Assinatura do Engenheiro Principal", r11: "Reconhecimento do Empreiteiro",
+            date: "Data", attach: "Fotos + Documentos anexos",
+            cancu_tiendo: ["1. Cláusulas contratuais sobre cronograma,", "2. Compromisso do empreiteiro,", "3. Progreso real da construção."],
+            cancu_chatluong: ["1. Cláusulas contratuais sobre qualidade,", "2. Documents de entrega técnica,", "3. Lista de verificação de qualidade."],
+            cancu_antoan: ["1. Cláusulas contratuais sobre segurança,", "2. Documents de entrega técnica,", "3. Lista de verificação de segurança."]
+        }
+    };
+
+    const baseDict = {
+        vi: {
+            vi_name: "Tiếng Việt",
+            tiendo_vi: "BIÊN BẢN THÔNG BÁO CHẬM TIẾN ĐỘ", chatluong_vi: "BIÊN BẢN THÔNG BÁO VI PHẠM CHẤT LƯỢNG", antoan_vi: "BIÊN BẢN THÔNG BÁO VI PHẠM AN TOÀN",
+            cancu_tiendo: ["1. Điều khoản về tiến độ trong hợp đồng,", "2. Bảng cam kết tiến độ thi công nhà thầu kí,", "3. Tình hình thực tế thi công."],
+            cancu_chatluong: ["1. Điều khoản về chất lượng trong hợp đồng,", "2. Tài liệu bàn giao kĩ thuật,", "3. Bảng check list lỗi chất lượng thi công."],
+            cancu_antoan: ["1. Điều khoản về an toàn trong hợp đồng,", "2. Tài liệu bàn giao kĩ thuật,", "3. Bảng check list lỗi an toàn thi công."],
+            r1: "Tên công trình", r2: "Tên hạng mục", r3: "Đơn vị thi công", r4: "Mã số hợp đồng", r5: "Mã số thông báo",
+            r6: "Căn cứ thông báo", r7: "Nội dung thông báo",
+            r8: "Giám đốc công trình ký", r9: "Phó tổng giám đốc ký", r10: "Kỹ sư phụ trách chính ký", r11: "Đơn vị thi công kí nhận",
+            date: "Ngày", attach: "Ảnh chụp + tài liệu đính kèm"
+        },
+        en: {
+            vi_name: "English",
+            tiendo_vi: "SCHEDULE DELAY NOTICE", chatluong_vi: "QUALITY VIOLATION NOTICE", antoan_vi: "SAFETY VIOLATION NOTICE",
+            cancu_tiendo: ["1. Contract clauses regarding schedule,", "2. Contractor's schedule commitment,", "3. Actual construction progress."],
+            cancu_chatluong: ["1. Contract clauses regarding quality,", "2. Technical handover documents,", "3. Quality defect checklist."],
+            cancu_antoan: ["1. Contract clauses regarding safety,", "2. Technical handover documents,", "3. Safety hazard checklist."],
+            r1: "Project Name", r2: "Item Name", r3: "Contractor", r4: "Contract No.", r5: "Notice No.",
+            r6: "Basis of Notice", r7: "Notice Content",
+            r8: "Project Manager Signature", r9: "Deputy General Director Signature", r10: "Lead Engineer Signature", r11: "Contractor Acknowledgment",
+            date: "Date", attach: "Photos + Attached Documents"
+        },
+        zh: {
+            vi_name: "中文",
+            tiendo_vi: "进度拖慢通知单", chatluong_vi: "质量违反通知单", antoan_vi: "安全违反通知单",
+            cancu_tiendo: ["1. 合同中进度有关的条款,", "2. 分包商签署的施工进度承诺,", "3. 实际施工进度."],
+            cancu_chatluong: ["1. 合同中质量有关的条款,", "2. 技术交底文件,", "3. 施工质量问题清单表."],
+            cancu_antoan: ["1. 合同中安全有关的条款,", "2. 安全交底文件,", "3. 施工安全问题清单表."],
+            r1: "工程名称", r2: "项目名称", r3: "施工单位", r4: "合约编号", r5: "通知编号",
+            r6: "通知编制依据", r7: "通知内容",
+            r8: "项目经理签字", r9: "副总经理签字", r10: "主办工程师签字", r11: "施工单位签收",
+            date: "日期", attach: "附带照片+文件"
+        },
+        ja: {
+            vi_name: "日本語",
+            tiendo_vi: "工期遅延通知書", chatluong_vi: "品質違反通知書", antoan_vi: "安全違反通知書",
+            cancu_tiendo: ["1. 契約書の工期条項、", "2. 施工計画書、", "3. 実際の施工進捗。"],
+            cancu_chatluong: ["1. 契約書の品質条項、", "2. 技術引き渡し書類、", "3. 品質不具合チェックリスト。"],
+            cancu_antoan: ["1. 契約書の安全条項、", "2. 技術引き渡し書類、", "3. 安全危険チェックリスト。"],
+            r1: "工事名称", r2: "工区名称", r3: "施工業者", r4: "契約番号", r5: "通知番号",
+            r6: "通知根拠", r7: "通知内容",
+            r8: "プロジェクトマネージャー署名", r9: "副総経理署名", r10: "主任技術者署名", r11: "施工業者受領署名",
+            date: "日付", attach: "写真＋添付書類"
+        },
+        ko: {
+            vi_name: "한국어",
+            tiendo_vi: "공기 지연 통지서", chatluong_vi: "품질 위반 통지서", antoan_vi: "안전 위반 통지서",
+            cancu_tiendo: ["1. 계약서 공정 조항,", "2. 시공사의 공정 이행 각서,", "3. 실제 시공 진척도."],
+            cancu_chatluong: ["1. 계약서 품질 조항,", "2. 기술 인수도 문서,", "3. 품질 결함 체크리스트."],
+            cancu_antoan: ["1. 계약서 안전 조항,", "2. 기술 인수도 문서,", "3. 안전 위험 체크리스트."],
+            r1: "공사명", r2: "공종명", r3: "시공사", r4: "계약번호", r5: "통보번호",
+            r6: "통보 근거", r7: "통보 내용",
+            r8: "현장소장 서명", r9: "부사장 서명", r10: "책임엔지니어 서명", r11: "시공사 확인",
+            date: "날짜", attach: "사진 + 첨부서류"
+        },
+        fr: {
+            vi_name: "Français",
+            tiendo_vi: "AVIS DE RETARD DE PLANNING", chatluong_vi: "AVIS DE VIOLATION DE QUALITÉ", antoan_vi: "AVIS DE VIOLATION DE SÉCURITÉ",
+            cancu_tiendo: ["1. Clauses contractuelles de planning,", "2. Engagement de planning,", "3. Avancement réel."],
+            cancu_chatluong: ["1. Clauses contractuelles de qualité,", "2. Documents techniques,", "3. Liste des défauts de qualité."],
+            cancu_antoan: ["1. Clauses contractuelles de sécurité,", "2. Documents techniques,", "3. Liste des risques de sécurité."],
+            r1: "Nom du projet", r2: "Nom de l'élément", r3: "Entrepreneur", r4: "N° de contrat", r5: "N° d'avis",
+            r6: "Base de l'avis", r7: "Contenu de l'avis",
+            r8: "Signature du Chef de Projet", r9: "Signature du DGA", r10: "Signature de l'Ingénieur Principal", r11: "Reconnaissance de l'entrepreneur",
+            date: "Date", attach: "Photos + Documents joints"
+        },
+        de: {
+            vi_name: "Deutsch",
+            tiendo_vi: "BAUZEITVERZÖGERUNG", chatluong_vi: "QUALITÄTSVERLETZUNG", antoan_vi: "SICHERHEITSVERLETZUNG",
+            cancu_tiendo: ["1. Vertragsbestimmungen zum Zeitplan,", "2. Verpflichtung des Auftragnehmers,", "3. Tatsächlicher Baufortschritt."],
+            cancu_chatluong: ["1. Vertragsbestimmungen zur Qualität,", "2. Technische Übergabedokumente,", "3. Mängelliste."],
+            cancu_antoan: ["1. Vertragsbestimmungen zur Sicherheit,", "2. Technische Übergabedokumente,", "3. Sicherheitscheckliste."],
+            r1: "Projektname", r2: "Projektteil", r3: "Auftragnehmer", r4: "Vertrags-Nr.", r5: "Mitteilungs-Nr.",
+            r6: "Grundlage", r7: "Inhalt",
+            r8: "Unterschrift Projektleiter", r9: "Unterschrift Stv. Geschäftsführer", r10: "Unterschrift Leitender Ingenieur", r11: "Bestätigung Auftragnehmer",
+            date: "Datum", attach: "Fotos + Dokumente"
+        },
+        ru: {
+            vi_name: "Русский",
+            tiendo_vi: "УВЕДОМЛЕНИЕ ОБ ОТСТАВКЕ ОТ ГРАФИКА", chatluong_vi: "УВЕДОМЛЕНИЕ О НАРУШЕНИИ КАЧЕСТВА", antoan_vi: "УВЕДОМЛЕНИЕ О НАРУШЕНИИ ТБ",
+            cancu_tiendo: ["1. Пункты договора о сроках,", "2. График подрядчика,", "3. Фактический прогресс."],
+            cancu_chatluong: ["1. Пункты договора о качестве,", "2. Техническая документация,", "3. Чек-лист дефектов."],
+            cancu_antoan: ["1. Пункты договора о безопасности,", "2. Техническая документация,", "3. Чек-лист нарушений ТБ."],
+            r1: "Название проекта", r2: "Наименование объекта", r3: "Подрядчик", r4: "Договор №", r5: "Уведомление №",
+            r6: "Основание", r7: "Содержание",
+            r8: "Подпись Руководителя проекта", r9: "Подпись Зам. ген. директора", r10: "Подпись Главного инженера", r11: "Подпись подрядчика",
+            date: "Дата", attach: "Фото + Документы"
+        },
+        th: {
+            vi_name: "ไทย",
+            tiendo_vi: "หนังสือแจ้งความล่าช้าของงาน", chatluong_vi: "หนังสือแจ้งการละเมิดคุณภาพ", antoan_vi: "หนังสือแจ้งการละเมิดความปลอดภัย",
+            cancu_tiendo: ["1. ข้อสัญญาเกี่ยวกับกำหนดเวลา,", "2. แผนงานของผู้รับเหมา,", "3. ความคืบหน้าหน้างานจริง."],
+            cancu_chatluong: ["1. ข้อสัญญาเกี่ยวกับคุณภาพ,", "2. เอกสารส่งมอบงาน,", "3. ตารางตรวจสอบข้อบกพร่อง."],
+            cancu_antoan: ["1. ข้อสัญญาเกี่ยวกับความปลอดภัย,", "2. เอกสารส่งมอบงาน,", "3. ตารางตรวจสอบความปลอดภัย."],
+            r1: "ชื่อโครงการ", r2: "ชื่องานย่อย", r3: "ผู้รับเหมา", r4: "เลขที่สัญญา", r5: "เลขที่หนังสือแจ้ง",
+            r6: "อ้างอิงตาม", r7: "เนื้อหาแจ้ง",
+            r8: "ลายมือชื่อผู้จัดการโครงการ", r9: "ลายมือชื่อรองกรรมการผู้จัดการ", r10: "ลายมือชื่อวิศวกรควบคุม", r11: "ลายมือชื่อผู้รับเหมา",
+            date: "วันที่", attach: "รูปถ่าย + เอกสารแนบ"
+        },
+        in: {
+            vi_name: "हिन्दी",
+            tiendo_vi: "निर्माण में देरी की सूचना", chatluong_vi: "गुणवत्ता उल्लंघन की सूचना", antoan_vi: "सुरक्षा उल्लंघन की सूचना",
+            cancu_tiendo: ["1. समय-सारणी संबंधी अनुबंध खंड,", "2. ठेकेदार की प्रतिबद्धता,", "3. वास्तविक निर्माण प्रगति."],
+            cancu_chatluong: ["1. गुणवत्ता संबंधी अनुबंध खंड,", "2. तकनीकी दस्तावेज,", "3. गुणवत्ता दोष चेकलिस्ट."],
+            cancu_antoan: ["1. सुरक्षा संबंधी अनुबंध खंड,", "2. तकनीकी दस्तावेज,", "3. सुरक्षा जोखिम चेकलिस्ट."],
+            r1: "परियोजना का नाम", r2: "खंड का नाम", r3: "ठेकेदार", r4: "अनुबंध संख्या", r5: "सूचना संख्या",
+            r6: "सूचना का आधार", r7: "सूचना सामग्री",
+            r8: "परियोजना प्रबंधक हस्ताक्षर", r9: "उप महाप्रबंधक हस्ताक्षर", r10: "मुख्य अभियंता हस्ताक्षर", r11: "ठेकेदार पावती",
+            date: "दिनांक", attach: "तस्वीरें + संलग्न दस्तावेज"
+        },
+        ar: {
+            vi_name: "العربية",
+            tiendo_vi: "إشعار تأخير المشروع", chatluong_vi: "إشعار مخالفة الجودة", antoan_vi: "إشعار مخالفة السلامة",
+            cancu_tiendo: ["1. بنود العقد المتعلقة بالجدول الزمني,", "2. التزام المقاول بالجدول الزمني,", "3. تقدم العمل الفعلي."],
+            cancu_chatluong: ["1. بنود العقد المتعلقة بالجودة,", "2. مستندات التسليم الفني,", "3. قائمة عيوب الجودة."],
+            cancu_antoan: ["1. بنود العقد المتعلقة بالسلامة,", "2. مستندات التسليم الفني,", "3. قائمة فحص مخاطر السلامة."],
+            r1: "اسم المشروع", r2: "اسم البند", r3: "المقاول", r4: "رقم العقد", r5: "رقم الإشعار",
+            r6: "أساس الإشعار", r7: "محتوى الإشعار",
+            r8: "توقيع مدير المشروع", r9: "توقيع نائب المدير العام", r10: "توقيع المهندس الرئيسي", r11: "إقرار المقاول",
+            date: "التاريخ", attach: "صور + مستندات مرفقة"
+        },
+        es: {
+            vi_name: "Español",
+            tiendo_vi: "AVISO DE RETRASO DE CRONOGRAMA", chatluong_vi: "AVISO DE VIOLACIÓN DE CALIDAD", antoan_vi: "AVISO DE VIOLACIÓN DE SEGURIDAD",
+            cancu_tiendo: ["1. Cláusulas contractuales sobre cronograma,", "2. Compromiso del contratista,", "3. Progreso real de construcción."],
+            cancu_chatluong: ["1. Cláusulas contractuales sobre calidad,", "2. Documentos de entrega técnica,", "3. Lista de verificación de calidad."],
+            cancu_antoan: ["1. Cláusulas contractuales sobre seguridad,", "2. Documentos de entrega técnica,", "3. Lista de verificación de seguridad."],
+            r1: "Nombre del Proyecto", r2: "Nombre del Ítem", r3: "Contratista", r4: "N° de Contrato", r5: "N° de Aviso",
+            r6: "Base del Aviso", r7: "Contenido del Aviso",
+            r8: "Firma del Gerente de Proyecto", r9: "Firma del Director Adjunto", r10: "Firma del Ingeniero Principal", r11: "Reconocimiento del Contratista",
+            date: "Fecha", attach: "Fotos + Documentos adjuntos"
+        },
+        pt: {
+            vi_name: "Português",
+            tiendo_vi: "AVISO DE ATRASO DE CRONOGRAMA", chatluong_vi: "AVISO DE VIOLAÇÃO DE QUALIDADE", antoan_vi: "AVISO DE VIOLAÇÃO DE SEGURANÇA",
+            cancu_tiendo: ["1. Cláusulas contratuais sobre cronograma,", "2. Compromisso do empreiteiro,", "3. Progreso real da construção."],
+            cancu_chatluong: ["1. Cláusulas contratuais sobre qualidade,", "2. Documents de entrega técnica,", "3. Lista de verificação de qualidade."],
+            cancu_antoan: ["1. Cláusulas contratuais sobre segurança,", "2. Documents de entrega técnica,", "3. Lista de verificação de segurança."],
+            r1: "Nome do Projeto", r2: "Nome do Item", r3: "Empreiteiro", r4: "N° do Contrato", r5: "N° do Aviso",
+            r6: "Base do Aviso", r7: "Conteúdo do Aviso",
+            r8: "Assinatura do Gerente de Projeto", r9: "Assinatura do Diretor Adjunto", r10: "Assinatura do Engenheiro Principal", r11: "Reconhecimento do Empreiteiro",
+            date: "Data", attach: "Fotos + Documents anexos"
+        }
+    };
+
+    function syncData() {
+        const lang = document.getElementById('uiLangSelect').value;
+        const t = uiTexts[lang] || uiTexts['vi'];
+
+        document.getElementById('ui_main_title').innerText = t.title;
+        document.getElementById('lbl_ui_lang').innerText = t.langLabel;
+        document.getElementById('ui_sec1').innerText = t.sec1;
+        document.getElementById('ui_lbl_doctype').innerText = t.lblDocType;
+        document.getElementById('ui_btn_sample').innerText = t.btnSample;
+        document.getElementById('ui_lbl_langmode').innerText = t.lblLangMode;
+        document.getElementById('ui_lbl_sublang').innerText = t.lblSubLang;
+        document.getElementById('ui_btn_updatelang').innerText = t.btnUpdateLang;
+        document.getElementById('ui_lbl_logo').innerText = t.lblLogo;
+        document.getElementById('ui_lbl_apikey').innerText = t.lblApiKey;
+        document.getElementById('ui_sec2').innerText = t.sec2;
+        document.getElementById('ui_lbl_project').innerText = t.lblProject;
+        document.getElementById('ui_lbl_item').innerText = t.lblItem;
+        document.getElementById('ui_lbl_contractor').innerText = t.lblContractor;
+        document.getElementById('ui_lbl_contractno').innerText = t.lblContractNo;
+        document.getElementById('ui_lbl_noticeno').innerText = t.lblNoticeNo;
+        document.getElementById('ui_lbl_content').innerText = t.lblContent;
+        document.getElementById('ui_btn_trans').innerText = t.btnTrans;
+        document.getElementById('ui_lbl_attach_file').innerText = t.lblAttachFile;
+        document.getElementById('ui_lbl_mgr').innerText = t.lblMgr;
+        document.getElementById('ui_lbl_deputy').innerText = t.lblDeputy;
+        document.getElementById('ui_lbl_lead').innerText = t.lblLead;
+        document.getElementById('ui_lbl_ack').innerText = t.lblAck;
+        document.getElementById('ui_lbl_date').innerText = t.lblDate;
+        document.getElementById('ui_sec3').innerText = t.sec3;
+        document.getElementById('ui_btn_png').innerText = t.btnPng;
+        document.getElementById('ui_btn_pdf').innerText = t.btnPdf;
+        document.getElementById('ui_btn_word').innerText = t.btnWord;
+        document.getElementById('ui_btn_close').innerText = t.btnClose;
+
+        document.getElementById('opt_tiendo').innerText = t.optTiendo;
+        document.getElementById('opt_chatluong').innerText = t.optChatluong;
+        document.getElementById('opt_antoan').innerText = t.optAntoan;
+        document.getElementById('opt_bil').innerText = t.optBil;
+        document.getElementById('opt_vio').innerText = t.optVio;
+        document.getElementById('opt_subo').innerText = t.optSubo;
+        document.getElementById('apiKey').placeholder = t.apiPlaceholder;
+
+        document.getElementById('sub_zh').innerText = t.subZH;
+        document.getElementById('sub_en').innerText = t.subEN;
+        document.getElementById('sub_fr').innerText = t.subFR;
+        document.getElementById('sub_ru').innerText = t.subRU;
+        document.getElementById('sub_de').innerText = t.subDE;
+        document.getElementById('sub_ja').innerText = t.subJA;
+        document.getElementById('sub_ko').innerText = t.subKO;
+        document.getElementById('sub_th').innerText = t.subTH;
+        document.getElementById('sub_in').innerText = t.subIN;
+        document.getElementById('sub_ar').innerText = t.subAR;
+
+        const type = document.getElementById('docType').value;
+        const mode = document.getElementById('langMode').value;
+        const subKey = document.getElementById('subLang').value;
+        
+        const subObj = dict[subKey] || dict['ZH'];
+        const baseObj = baseDict[lang] || baseDict['vi'];
+
+        let titleSub = subObj[type];
+        let titleBase = baseObj[type === 'tiendo' ? 'tiendo_vi' : (type === 'chatluong' ? 'chatluong_vi' : 'antoan_vi')];
+
+        if(mode === 'vi_only') {
+            document.getElementById('lbl_title_main').style.display = 'none';
+            document.getElementById('lbl_title_sub').style.display = 'block';
+            document.getElementById('lbl_title_sub').innerText = titleBase;
+        } else if(mode === 'sub_only') {
+            document.getElementById('lbl_title_main').style.display = 'block';
+            document.getElementById('lbl_title_main').innerText = titleSub;
+            document.getElementById('lbl_title_sub').style.display = 'none';
+        } else {
+            document.getElementById('lbl_title_main').style.display = 'block';
+            document.getElementById('lbl_title_sub').style.display = 'block';
+            document.getElementById('lbl_title_main').innerText = titleSub;
+            document.getElementById('lbl_title_sub').innerText = titleBase;
+        }
+
+        for(let i=1; i<=11; i++) {
+            let sLbl = subObj['r'+i];
+            let bLbl = baseObj['r'+i];
+            let txt = "";
+            if(mode === 'bilingual') txt = sLbl + " / " + bLbl;
+            else if(mode === 'vi_only') txt = bLbl;
+            else txt = sLbl;
+            document.getElementById('lbl_r'+i).innerText = txt;
+        }
+
+        let dSub = subObj.date;
+        let dBase = baseObj.date;
+        let dTxt = (mode === 'bilingual') ? (dSub + " / " + dBase) : (mode === 'vi_only' ? dBase : dSub);
+        
+        const currentDateVal = document.getElementById('in_ngay').value;
+        for(let d=1; d<=4; d++) {
+            document.getElementById('lbl_date'+d).innerText = dTxt + ":";
+        }
+        document.getElementById('out_ngay3').innerText = currentDateVal;
+
+        let aSub = subObj.attach;
+        let aBase = baseObj.attach;
+        document.getElementById('lbl_attach').innerText = (mode === 'bilingual') ? (aSub + " / " + aBase) : (mode === 'vi_only' ? aBase : aSub);
+
+        let cancuSub = subObj['cancu_'+type];
+        let cancuBase = baseObj['cancu_'+type];
+        let cancuHTML = "";
+        for(let c=0; c<3; c++) {
+            let cLine = "";
+            if(mode === 'bilingual') cLine = cancuSub[c] + " / " + cancuBase[c];
+            else if(mode === 'vi_only') cLine = cancuBase[c];
+            else cLine = cancuSub[c];
+            cancuHTML += cLine + "<br>";
+        }
+        document.getElementById('out_cancu').innerHTML = cancuHTML;
+
+        document.getElementById('out_congtrinh').innerText = document.getElementById('in_congtrinh').value;
+        document.getElementById('out_hangmuc').innerText = document.getElementById('in_hangmuc').value;
+        document.getElementById('out_donvithicong').innerText = document.getElementById('in_donvithicong').value;
+        document.getElementById('out_hopdong').innerText = document.getElementById('in_hopdong').value;
+        document.getElementById('out_mathongbao').innerText = document.getElementById('in_mathongbao').value;
+        document.getElementById('out_giamdoc').innerText = document.getElementById('in_giamdoc').value;
+        document.getElementById('out_phogiamdoc').innerText = document.getElementById('in_phogiamdoc').value;
+        document.getElementById('out_kysu').innerText = document.getElementById('in_kysu').value;
+        document.getElementById('out_thicongky').innerText = document.getElementById('in_thicongky').value;
+
+        let rawContent = document.getElementById('in_noidung').value;
+        document.getElementById('out_noidung').innerText = rawContent;
+    }
+
+    function loadLogo(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('logoContainer').innerHTML = `<img src="${e.target.result}" alt="Logo" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function loadAttachments(event) {
+        const files = Array.from(event.target.files || []);
+        const container = document.getElementById('previewImagesContainer');
+        const status = document.getElementById('attachmentStatus');
+        container.replaceChildren();
+        if (!files.length) {
+            status.textContent = 'Chưa chọn ảnh đính kèm.';
+            return;
+        }
+        status.textContent = 'Đang đọc ' + files.length + ' ảnh...';
+        const readFile = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = () => reject(new Error(file.name + ': không đọc được tệp'));
+            reader.readAsDataURL(file);
+        });
+        let loaded = 0;
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) continue;
+            try {
+                const src = await readFile(file);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'img-card-wrapper';
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = file.name;
+                img.style.height = 'auto';
+                img.style.maxHeight = 'none';
+                wrapper.appendChild(img);
+                container.appendChild(wrapper);
+                loaded++;
+            } catch(err) { console.error(err); }
+        }
+        status.textContent = loaded ? ('Đã chọn và tải thành công ' + loaded + ' ảnh.') :
+            'Không đọc được ảnh. Hãy thử chọn ảnh từ Thư viện hoặc Tệp trên điện thoại.';
+    }
+
+    async function autoTranslateText() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        let textVal = document.getElementById('in_noidung').value;
+        const subLang = document.getElementById('subLang').value;
+        const mode = document.getElementById('langMode').value;
+
+        if(!textVal) { alert('Vui lòng nhập nội dung!'); return; }
+        if(!apiKey) { alert('Vui lòng nhập API Key để dịch tự động.'); return; }
+
+        try {
+            const targetLang = subLang === 'IN' ? 'hi' : subLang.toLowerCase();
+            const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ q: textVal, target: targetLang, format: 'text' })
+            });
+            const data = await response.json();
+            if(data.data && data.data.translations) {
+                let transText = data.data.translations[0].translatedText;
+                if(mode === 'bilingual') {
+                    document.getElementById('in_noidung').value = transText + "\n" + textVal;
+                } else if(mode === 'sub_only') {
+                    document.getElementById('in_noidung').value = transText;
+                } else {
+                    document.getElementById('in_noidung').value = textVal;
+                }
+                syncData();
+                alert('Dịch thành công!');
+            } else { alert('Lỗi dịch API.'); }
+        } catch(e) { alert('Không thể kết nối dịch vụ dịch thuật.'); }
+    }
+
+    function openModal() {
+        const type = document.getElementById('docType').value;
+        const subObj = dict[document.getElementById('subLang').value] || dict['ZH'];
+        document.getElementById('modalTitle').innerText = subObj[type] + " (Mẫu Chuẩn)";
+        document.getElementById('modalDesc').innerHTML = "<b>Quy chuẩn:</b><br>- Chọn ngôn ngữ giao diện ở góc phải.<br>- Ngày lập biên bản nằm ở ô Kỹ sư phụ trách chính.<br>- Ảnh đính kèm tự động phóng to sát mép và chống cắt ngang trang.";
+        document.getElementById('sampleModal').style.display = 'flex';
+    }
+    function closeModal() { document.getElementById('sampleModal').style.display = 'none'; }
+
+
+    // Xuất trang A4 độc lập. Ảnh đính kèm luôn được render theo chế độ "contain" để không bị cắt, không méo.
+    const A4_WIDTH = 210, A4_HEIGHT = 297;
+    const EXPORT_PX_WIDTH = 1240;
+    const EXPORT_PX_HEIGHT = Math.round(EXPORT_PX_WIDTH * A4_HEIGHT / A4_WIDTH);
+    const PDF_PAGE_WIDTH_PT = 595.28;
+    const PDF_PAGE_HEIGHT_PT = 841.89;
+    let exportBusy = false;
+
+    async function ensureHtml2CanvasReady() {
+        if (typeof html2canvas === 'function') return;
+        const candidates = [
+            'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+            'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+            'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+        ];
+        for (const src of candidates) {
+            try {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('load failed'));
+                    document.head.appendChild(script);
+                });
+                if (typeof html2canvas === 'function') return;
+            } catch (e) {}
+        }
+        throw new Error('Không tải được thư viện html2canvas. Hãy bật Internet rồi thử lại.');
+    }
+
+    function saveBlob(blob, fileName, mimeType) {
+        if (window.DongHuiAndroid && typeof window.DongHuiAndroid.saveFile === 'function') {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = String(reader.result).split(',')[1];
+                window.DongHuiAndroid.saveFile(fileName, mimeType || blob.type || 'application/octet-stream', base64);
+            };
+            reader.readAsDataURL(blob);
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
+        }
+    }
+
+    function saveDataUrl(dataUrl, fileName, mime) {
+        if (window.DongHuiAndroid && typeof window.DongHuiAndroid.saveFile === 'function') {
+            window.DongHuiAndroid.saveFile(fileName, mime, dataUrl.split(',')[1]);
+        } else {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+    }
+
+    function waitForImage(img) {
+        return new Promise(resolve => {
+            if (!img) return resolve();
+            if (img.complete && (img.naturalWidth || 0) > 0) return resolve();
+            const done = () => resolve();
+            img.onload = done;
+            img.onerror = done;
+        });
+    }
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.decoding = 'async';
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('Không đọc được ảnh đính kèm.'));
+            img.src = src;
+        });
+    }
+
+    function calcContainRect(srcW, srcH, boxW, boxH) {
+        const safeW = Math.max(1, srcW || 1);
+        const safeH = Math.max(1, srcH || 1);
+        const ratio = Math.min(boxW / safeW, boxH / safeH);
+        const drawW = safeW * ratio;
+        const drawH = safeH * ratio;
+        const drawX = (boxW - drawW) / 2;
+        const drawY = (boxH - drawH) / 2;
+        return { drawX, drawY, drawW, drawH };
+    }
+
+    async function buildReportCanvas() {
+        await ensureHtml2CanvasReady();
+        await document.fonts.ready;
+        const source = document.getElementById('invoice-preview-area');
+        const report = source.cloneNode(true);
+        report.removeAttribute('id');
+        report.classList.add('dh-a4-export');
+        const imgs = report.querySelector('#previewImagesContainer');
+        if (imgs) imgs.remove();
+        report.style.cssText = 'width:210mm;height:297mm;min-height:0;padding:8mm 10mm 10mm 20mm;box-shadow:none;overflow:hidden;background:#fff;';
+
+        const host = document.createElement('div');
+        host.style.cssText = 'position:absolute;left:-20000px;top:0;width:210mm;z-index:-1;background:#fff;';
+        const style = document.createElement('style');
+        style.textContent = `
+            * { box-sizing: border-box; }
+            .dh-a4-export { font-family: 'Times New Roman', serif; color: #000; }
+            .dh-a4-export table { width: 100%; border-collapse: collapse; }
+            .dh-a4-export .invoice-table td, .dh-a4-export .invoice-table th { border: 1px solid #000; padding: 3px 6px; vertical-align: top; line-height: 1.28; font-size: 11pt; }
+            .dh-a4-export .header-top { box-shadow: none; }
+            .dh-a4-export .preview-images-grid { display: none !important; }
+        `;
+        host.appendChild(style);
+        host.appendChild(report);
+        document.body.appendChild(host);
+
+        try {
+            const allImages = Array.from(host.querySelectorAll('img'));
+            await Promise.all(allImages.map(waitForImage));
+            // Reserve 10 mm lower margin; refuse export rather than silently cut content.
+            const table = report.querySelector('table.invoice-table');
+            const availableBottom = report.getBoundingClientRect().bottom - (10 * 96 / 25.4);
+            if (table && table.getBoundingClientRect().bottom > availableBottom + 2) {
+                throw new Error('Noi dung thong bao qua dai, vuot qua trang A4. Hay rut gon noi dung hoac giam so dong truoc khi xuat.');
+            }
+            const scale = EXPORT_PX_WIDTH / Math.max(1, report.offsetWidth);
+            return await html2canvas(report, {
+                scale: scale,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: report.offsetWidth,
+                height: report.offsetHeight,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: report.offsetWidth,
+                windowHeight: report.offsetHeight
+            });
+        } finally {
+            host.remove();
+        }
+    }
+
+    async function buildPhotoCanvas(photoSrc, pageIndex, totalPages) {
+        const canvas = document.createElement('canvas');
+        canvas.width = EXPORT_PX_WIDTH;
+        canvas.height = EXPORT_PX_HEIGHT;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const marginLeft = 90;
+        const marginRight = 60;
+        const marginTop = 55;
+        const marginBottom = 55;
+        const labelSize = 26;
+        const labelGap = 18;
+        const framePadding = 12;
+
+        const label = `${document.getElementById('lbl_attach').innerText} (${pageIndex}/${totalPages})`;
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 26px "Times New Roman"';
+        ctx.textBaseline = 'top';
+        ctx.fillText(label, marginLeft, marginTop);
+
+        const boxX = marginLeft;
+        const boxY = marginTop + labelSize + labelGap;
+        const boxW = canvas.width - marginLeft - marginRight;
+        const boxH = canvas.height - boxY - marginBottom;
+
+        const img = await loadImage(photoSrc);
+        const rect = calcContainRect(img.naturalWidth, img.naturalHeight, boxW - framePadding * 2, boxH - framePadding * 2);
+        const drawX = boxX + framePadding + rect.drawX;
+        const drawY = boxY + framePadding + rect.drawY;
+        const drawW = rect.drawW;
+        const drawH = rect.drawH;
+
+        ctx.strokeStyle = '#444444';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        ctx.drawImage(img, drawX, drawY, drawW, drawH);
+        ctx.strokeStyle = '#888888';
+        ctx.strokeRect(drawX, drawY, drawW, drawH);
+
+        return canvas;
+    }
+
+    async function getExportCanvases() {
+        const pages = [];
+        pages.push(await buildReportCanvas());
+        const images = Array.from(document.querySelectorAll('#previewImagesContainer img'));
+        for (let i = 0; i < images.length; i++) {
+            pages.push(await buildPhotoCanvas(images[i].src, i + 1, images.length));
+        }
+        return pages;
+    }
+
+    function dataUrlToBytes(dataUrl) {
+        const base64 = dataUrl.split(',')[1] || '';
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes;
+    }
+
+    function uint8ToString(bytes) {
+        let result = '';
+        const chunk = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunk) {
+            result += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunk, bytes.length)));
+        }
+        return result;
+    }
+
+    function buildPdfBlobFromJpegData(jpegPages) {
+        const encoder = new TextEncoder();
+        const parts = [];
+        const offsets = [];
+        let position = 0;
+        const pushString = (str) => {
+            const bytes = encoder.encode(str);
+            parts.push(bytes);
+            position += bytes.length;
+        };
+        const pushBytes = (bytes) => {
+            parts.push(bytes);
+            position += bytes.length;
+        };
+        const startObject = (objNum) => {
+            offsets[objNum] = position;
+            pushString(objNum + ' 0 obj\n');
+        };
+        const endObject = () => pushString('\nendobj\n');
+
+        const pageCount = jpegPages.length;
+        const maxObj = 2 + pageCount * 3;
+        pushString('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+
+        startObject(1);
+        pushString('<< /Type /Catalog /Pages 2 0 R >>');
+        endObject();
+
+        const kids = [];
+        for (let i = 0; i < pageCount; i++) kids.push((3 + i * 3) + ' 0 R');
+        startObject(2);
+        pushString(`<< /Type /Pages /Count ${pageCount} /Kids [ ${kids.join(' ')} ] >>`);
+        endObject();
+
+        for (let i = 0; i < pageCount; i++) {
+            const pageObj = 3 + i * 3;
+            const contentObj = pageObj + 1;
+            const imageObj = pageObj + 2;
+            const page = jpegPages[i];
+            const imageBytes = dataUrlToBytes(page.dataUrl);
+            const contentStream = `q\n${PDF_PAGE_WIDTH_PT} 0 0 ${PDF_PAGE_HEIGHT_PT} 0 0 cm\n/Im0 Do\nQ`;
+            const contentLen = encoder.encode(contentStream).length;
+
+            startObject(pageObj);
+            pushString(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PDF_PAGE_WIDTH_PT} ${PDF_PAGE_HEIGHT_PT}] /Resources << /XObject << /Im0 ${imageObj} 0 R >> >> /Contents ${contentObj} 0 R >>`);
+            endObject();
+
+            startObject(contentObj);
+            pushString(`<< /Length ${contentLen} >>\nstream\n${contentStream}\nendstream`);
+            endObject();
+
+            startObject(imageObj);
+            pushString(`<< /Type /XObject /Subtype /Image /Width ${page.width} /Height ${page.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imageBytes.length} >>\nstream\n`);
+            pushBytes(imageBytes);
+            pushString('\nendstream');
+            endObject();
+        }
+
+        const xrefOffset = position;
+        pushString(`xref\n0 ${maxObj + 1}\n`);
+        pushString('0000000000 65535 f \n');
+        for (let i = 1; i <= maxObj; i++) {
+            const off = String(offsets[i] || 0).padStart(10, '0');
+            pushString(`${off} 00000 n \n`);
+        }
+        pushString(`trailer\n<< /Size ${maxObj + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+        return new Blob(parts, { type: 'application/pdf' });
+    }
+
+    function openPrintDialogWithImages(jpegPages) {
+        const pageCss = '@page { size: A4; margin: 0; } body { margin: 0; } .page { width: 210mm; height: 297mm; page-break-after: always; break-after: page; } img { width: 210mm; height: 297mm; display: block; }';
+        const html = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dong Hui PDF</title><style>', pageCss, '</style></head><body>'];
+        jpegPages.forEach(p => html.push(`<div class="page"><img src="${p.dataUrl}"></div>`));
+        html.push('</body></html>');
+        const win = window.open('', '_blank');
+        if (!win) {
+            alert('Trình duyệt chặn cửa sổ in. Hãy cho phép pop-up rồi thử lại.');
+            return;
+        }
+        win.document.open();
+        win.document.write(html.join(''));
+        win.document.close();
+        setTimeout(() => { win.focus(); win.print(); }, 500);
+    }
+
+    async function exportMultiPagePNG() {
+        if (exportBusy) return;
+        exportBusy = true;
+        try {
+            const pages = await getExportCanvases();
+            for (let i = 0; i < pages.length; i++) {
+                saveDataUrl(pages[i].toDataURL('image/png'), `Bien_Ban_DongHui_Trang_${i + 1}.png`, 'image/png');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Không xuất được PNG: ' + e.message);
+        } finally {
+            exportBusy = false;
+        }
+    }
+
+    async function exportMultiPagePDF() {
+        if (exportBusy) return;
+        exportBusy = true;
+        try {
+            const pages = await getExportCanvases();
+            const jpegPages = pages.map(canvas => ({
+                width: canvas.width,
+                height: canvas.height,
+                dataUrl: canvas.toDataURL('image/jpeg', 0.92)
+            }));
+            try {
+                const pdfBlob = buildPdfBlobFromJpegData(jpegPages);
+                saveBlob(pdfBlob, 'Bien_Ban_DongHui_Nhieu_Trang.pdf', 'application/pdf');
+            } catch (pdfErr) {
+                console.error(pdfErr);
+                openPrintDialogWithImages(jpegPages);
+                alert('Đã chuyển sang chế độ in PDF dự phòng. Hãy chọn "Save as PDF" để lưu file.');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Không xuất được PDF: ' + e.message);
+        } finally {
+            exportBusy = false;
+        }
+    }
+    function exportWord() {
+        // Word uses a page break for each photograph, with exact proportional dimensions.
+        const src=document.getElementById('invoice-preview-area');
+        const clone=src.cloneNode(true);
+        clone.querySelector('#previewImagesContainer')?.remove();
+        const photos=Array.from(src.querySelectorAll('#previewImagesContainer img'));
+        let photosHTML='';
+        for(const p of photos){
+            const w=p.naturalWidth||1,h=p.naturalHeight||1;
+            const ratio=Math.min(170/w,235/h);
+            const dw=Math.round(w*ratio*100)/100,dh=Math.round(h*ratio*100)/100;
+            photosHTML += `<div style="page-break-before:always;break-before:page;"><h3>${document.getElementById('lbl_attach').textContent}</h3><p style="text-align:center;"><img src="${p.src}" width="${Math.round(dw*96/25.4)}" height="${Math.round(dh*96/25.4)}" style="width:${dw}mm;height:${dh}mm;" /></p></div>`;
+        }
+        const content=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+         @page{size:A4;margin:10mm 10mm 10mm 20mm}body{font-family:'Times New Roman',serif;font-size:12pt}
+         table{border-collapse:collapse;width:100%}td,th{border:1px solid #000;padding:5px 8px;vertical-align:top}
+         .text-black{color:#000;font-weight:bold}.text-blue{color:#0066cc}
+         .dh-signature-cell{position:static;height:auto;vertical-align:top;line-height:1.5}
+         .dh-signature-inner{min-height:108px}
+         .dh-signature-title{display:block;font-weight:bold;line-height:1.5}
+         .dh-signature-foot{margin-top:8px}
+         .dh-signature-name{position:static;text-align:center;line-height:1.28;margin-bottom:4px}
+         .dh-signature-date{position:static;font-size:10pt;line-height:1.3}
+         .header-top{border-bottom:2px solid #003366;padding-bottom:8px}.doc-title-main,.doc-title-sub{text-align:center;color:#003366;font-weight:bold}
+     
+        /* v1.7 - Trang A4 gon va co le duoi 10mm. */
+        #invoice-preview-area { padding: 8mm 10mm 10mm 20mm; }
+        #invoice-preview-area .header-top { min-height: 38px; padding-bottom: 3px; margin-bottom: 3px; }
+        #invoice-preview-area .logo-area { height: 35px; }
+        #invoice-preview-area .doc-title-main { font-size: 14pt; margin-bottom: 0; }
+        #invoice-preview-area .doc-title-sub { font-size: 12.5pt; }
+        #invoice-preview-area .invoice-table td,
+        #invoice-preview-area .invoice-table th { padding: 3px 6px; line-height: 1.28; font-size: 11pt; }
+        #invoice-preview-area #out_cancu { line-height: 1.28 !important; margin-top: 1px !important; }
+        #invoice-preview-area #out_noidung { min-height: 0 !important; font-size: 11pt !important; line-height: 1.32 !important; }
+        #invoice-preview-area .invoice-table .dh-signature-cell { padding: 5px 7px 6px !important; }
+        #invoice-preview-area .invoice-table .dh-signature-inner { min-height: 108px; gap: 8px; }
+        #invoice-preview-area .invoice-table .dh-signature-title { line-height: 1.27; }
+        #invoice-preview-area .invoice-table .dh-signature-foot { gap: 3px; }
+        #invoice-preview-area .invoice-table .dh-signature-name { line-height: 1.25; }
+        #invoice-preview-area .invoice-table .dh-signature-date { line-height: 1.25; font-size: 10pt; }
+        #invoice-preview-area #lbl_attach { line-height: 1.2; }
+    </style></head><body>${clone.innerHTML}${photosHTML}</body></html>`;
+        const blob=new Blob(['\ufeff',content],{type:'application/msword'});
+        const reader=new FileReader();
+        reader.onload=()=>saveDataUrl(reader.result,'Bien_Ban_DongHui.doc','application/msword');
+        reader.readAsDataURL(blob);
+    }
+    // Dong Hui v1.4 - persistent drafts and contractor-contract directory.
+    const DH_STORAGE_KEY = 'donghui_notice_data_v14';
+    const DH_EDITABLE_FIELDS = ['uiLangSelect','docType','langMode','subLang','in_congtrinh','in_hangmuc',
+        'in_donvithicong','in_hopdong','in_mathongbao','in_noidung','in_giamdoc',
+        'in_phogiamdoc','in_kysu','in_thicongky','in_ngay'];
+    let dhRecord = { draft:{}, projects:[], contractors:[], rememberApi:false, apiKey:'' };
+    let dhSaveTimer = null;
+    function dhGet(id) { return document.getElementById(id); }
+    function dhReadStore() {
+        try {
+            const raw=localStorage.getItem(DH_STORAGE_KEY);
+            if(raw) {
+                const stored=JSON.parse(raw);
+                if(stored && typeof stored==='object') {
+                    dhRecord={...dhRecord,...stored};
+                    if(!Array.isArray(dhRecord.projects))dhRecord.projects=[];
+                    if(!Array.isArray(dhRecord.contractors))dhRecord.contractors=[];
+                    if(!dhRecord.draft || typeof dhRecord.draft!=='object')dhRecord.draft={};
+                }
+            }
+        } catch(e) { console.warn('Không đọc được dữ liệu đã lưu:',e); }
+    }
+    function dhWriteStore() {
+        try {
+            localStorage.setItem(DH_STORAGE_KEY,JSON.stringify(dhRecord));
+            dhGet('dh_save_status').textContent='Đã tự lưu các mục nhập trên thiết bị này.';
+        } catch(e) {
+            dhGet('dh_save_status').textContent='Không thể lưu dữ liệu trên thiết bị. Kiểm tra dung lượng/quyền lưu trữ.';
+            console.warn(e);
+        }
+    }
+    function dhSaveDraft() {
+        for(const id of DH_EDITABLE_FIELDS) {
+            const el=dhGet(id);
+            if(el) dhRecord.draft[id]=el.value;
+        }
+        dhRecord.rememberApi=dhGet('saveApiKey').checked;
+        dhRecord.apiKey=dhRecord.rememberApi ? dhGet('apiKey').value : '';
+        dhWriteStore();
+    }
+    function dhQueueSave() { clearTimeout(dhSaveTimer);dhSaveTimer=setTimeout(dhSaveDraft,450); }
+    function dhUniquePush(array, value) {
+        if(!value)return;
+        if(!array.some(x=>String(x).trim().toLowerCase()===value.toLowerCase()))array.push(value);
+        array.sort((a,b)=>a.localeCompare(b,'vi'));
+    }
+    function dhStoreProfile() {
+        const project=dhGet('in_congtrinh').value.trim();
+        const name=dhGet('in_donvithicong').value.trim();
+        const contract=dhGet('in_hopdong').value.trim();
+        if(project)dhUniquePush(dhRecord.projects,project);
+        if(name) {
+            let entry=dhRecord.contractors.find(x=>x.name.toLowerCase()===name.toLowerCase());
+            if(entry) {
+                if(contract)entry.contract=contract;
+            } else dhRecord.contractors.push({name,contract});
+            dhRecord.contractors.sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+        }
+        dhSaveDraft();
+        dhRenderProfiles();
+        dhGet('dh_save_status').textContent='Đã lưu công trình, nhà thầu và mã hợp đồng tương ứng.';
+    }
+    function dhRenderProfiles() {
+        const projectSelect=dhGet('dh_saved_project');
+        const contractorSelect=dhGet('dh_saved_contractor');
+        const projectList=dhGet('dh_project_suggestions');
+        const contractorList=dhGet('dh_contractor_suggestions');
+        const projectValue=projectSelect.value, contractorValue=contractorSelect.value;
+        projectSelect.replaceChildren(new Option('-- Chọn công trình --',''));
+        contractorSelect.replaceChildren(new Option('-- Chọn nhà thầu --',''));
+        projectList.replaceChildren();contractorList.replaceChildren();
+        dhRecord.projects.forEach(name=>{
+            projectSelect.add(new Option(name,name));projectList.append(new Option(name,name));
+        });
+        dhRecord.contractors.forEach(row=>{
+            contractorSelect.add(new Option(row.name+(row.contract?' — '+row.contract:''),row.name));
+            contractorList.append(new Option(row.name,row.name));
+        });
+        projectSelect.value=projectValue;
+        contractorSelect.value=contractorValue;
+    }
+    function dhFillContract(name) {
+        const row=dhRecord.contractors.find(x=>x.name.toLowerCase()===name.trim().toLowerCase());
+        if(row) {dhGet('in_hopdong').value=row.contract||'';syncData();dhQueueSave();}
+    }
+    function dhManageProfiles() {
+        const choice=prompt('QUẢN LÝ DỮ LIỆU ĐÃ LƯU:\n1: Xóa một nhà thầu\n2: Xóa một công trình\n3: Xóa toàn bộ thông tin đã lưu (bao gồm API Key)\nHủy: không thay đổi');
+        if(choice==='1') {
+            const names=dhRecord.contractors.map(x=>x.name);
+            const name=prompt('Nhập chính xác tên nhà thầu muốn xóa:\n'+names.join('\n'));
+            if(!name)return;
+            const idx=dhRecord.contractors.findIndex(x=>x.name.toLowerCase()===name.trim().toLowerCase());
+            if(idx>=0 && confirm('Xóa nhà thầu '+dhRecord.contractors[idx].name+'?'))dhRecord.contractors.splice(idx,1);
+        } else if(choice==='2') {
+            const name=prompt('Nhập chính xác tên công trình muốn xóa:\n'+dhRecord.projects.join('\n'));
+            if(!name)return;
+            const idx=dhRecord.projects.findIndex(x=>x.toLowerCase()===name.trim().toLowerCase());
+            if(idx>=0 && confirm('Xóa công trình '+dhRecord.projects[idx]+'?'))dhRecord.projects.splice(idx,1);
+        } else if(choice==='3') {
+            if(!confirm('Xóa TẤT CẢ dữ liệu đã lưu, gồm các mục nhập và API Key?'))return;
+            localStorage.removeItem(DH_STORAGE_KEY);
+            dhRecord={draft:{},projects:[],contractors:[],rememberApi:false,apiKey:''};
+            dhGet('saveApiKey').checked=false;dhGet('apiKey').value='';
+        } else return;
+        dhWriteStore();dhRenderProfiles();
+    }
+    function dhRestoreData() {
+        dhReadStore();
+        for(const id of DH_EDITABLE_FIELDS) {
+            if(Object.prototype.hasOwnProperty.call(dhRecord.draft,id) && dhGet(id)) {
+                dhGet(id).value=dhRecord.draft[id];
+            }
+        }
+        dhGet('saveApiKey').checked=Boolean(dhRecord.rememberApi);
+        dhGet('apiKey').value=dhRecord.rememberApi ? (dhRecord.apiKey||'') : '';
+        dhRenderProfiles();
+        dhGet('dh_saved_project').addEventListener('change',event=>{
+            if(event.target.value){dhGet('in_congtrinh').value=event.target.value;syncData();dhQueueSave();}
+        });
+        dhGet('dh_saved_contractor').addEventListener('change',event=>{
+            if(event.target.value){dhGet('in_donvithicong').value=event.target.value;dhFillContract(event.target.value);syncData();dhQueueSave();}
+        });
+        dhGet('in_donvithicong').addEventListener('change',event=>dhFillContract(event.target.value));
+        dhGet('in_congtrinh').addEventListener('change',()=>{
+            dhUniquePush(dhRecord.projects,dhGet('in_congtrinh').value.trim());dhRenderProfiles();dhSaveDraft();
+        });
+        dhGet('in_hopdong').addEventListener('change',()=>{
+            const name=dhGet('in_donvithicong').value.trim();
+            const contract=dhGet('in_hopdong').value.trim();
+            if(name && contract){
+                const entry=dhRecord.contractors.find(x=>x.name.toLowerCase()===name.toLowerCase());
+                if(entry)entry.contract=contract;
+                else dhRecord.contractors.push({name,contract});
+                dhRecord.contractors.sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+                dhRenderProfiles();dhSaveDraft();
+            }
+        });
+        dhGet('dh_save_profile').addEventListener('click',dhStoreProfile);
+        dhGet('dh_manage_profile').addEventListener('click',dhManageProfiles);
+        for(const id of DH_EDITABLE_FIELDS) {
+            const el=dhGet(id);
+            if(el){el.addEventListener('input',dhQueueSave);el.addEventListener('change',dhQueueSave);}
+        }
+        dhGet('apiKey').addEventListener('input',dhQueueSave);
+        dhGet('saveApiKey').addEventListener('change',dhQueueSave);
+        window.addEventListener('pagehide',dhSaveDraft);
+    }
+    window.onload = function() {
+        dhRestoreData();
+        syncData();
+    };
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
