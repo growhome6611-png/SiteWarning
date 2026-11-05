@@ -370,6 +370,19 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
 .google-sync-box{border:1px solid #b0c4de;border-radius:8px;padding:12px;background:#f8fbff;margin-top:14px}.google-user-badge{font-size:13px;color:#0f5132;background:#e8f7ef;border:1px solid #b8e2c7;padding:8px 10px;border-radius:8px;display:none;margin-bottom:6px}.btn-secondary{background:#475569}.btn-drive{background:#2563eb}.btn-drive2{background:#0f766e}.btn-drive3{background:#dc2626}
 @media(max-width:840px){.main-container{padding:0 6px 16px}.report-workspace{border-radius:10px;padding:5px}.report-viewport{padding:3px;height:calc(100dvh - 118px);min-height:calc(100dvh - 118px)}.report-toolbar{padding:4px 2px 6px}.preview-compact-note{font-size:11px}.dh-settings-panel,.dh-export-panel{left:6px;right:6px;top:64px;bottom:6px}.dh-settings-head{top:-12px;margin:-12px -12px 14px}.popup-overlay{padding:6px}.popup-card{border-radius:14px;max-height:calc(100dvh - 12px)}.popup-head{padding:10px 12px}.popup-head h3{font-size:20px}.popup-body{padding:10px 12px}.popup-body textarea{min-height:88px;max-height:26dvh}.popup-actions{padding:0 12px 10px}}
 
+
+/* v2.0 pan + compact settings + inline attachment */
+.report-stage{position:relative;flex:0 0 auto;min-width:1px;min-height:1px}
+.report-viewport{cursor:grab;overscroll-behavior:contain}
+.report-viewport.is-panning{cursor:grabbing}
+.dh-direct-edit-hidden{display:none !important}
+.dh-inline-photo-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.dh-inline-photo-btn{flex:0 0 auto;background:#0b6bd3;color:#fff;border:0;border-radius:6px;padding:5px 10px;font-size:10.5pt;font-family:Arial,sans-serif;box-shadow:none}
+.dh-inline-photo-btn:active{transform:scale(.98)}
+.google-client-help{font-size:12px;color:#526479;line-height:1.35;margin-top:6px}
+.google-client-error{color:#b42318;font-weight:600}
+@media(max-width:840px){.dh-inline-photo-btn{font-size:10pt;padding:5px 9px}}
+
 </style>
 
     <!-- Web/PWA deployment additions -->
@@ -560,7 +573,8 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             <div class="section-title" style="margin-top:0">Đồng bộ Google Drive</div>
             <div class="form-group">
                 <label for="googleClientId">Google OAuth Web Client ID</label>
-                <input type="text" id="googleClientId" placeholder="Dán Client ID để bật đăng nhập và đồng bộ">
+                <input type="text" id="googleClientId" placeholder="Ví dụ: 123456789-abc...apps.googleusercontent.com">
+                <div class="google-client-help" id="googleClientHelp">Phải là <b>OAuth 2.0 Client ID loại Web application</b>, kết thúc bằng <code>.apps.googleusercontent.com</code>. Không nhập URL, API key hoặc Client Secret.</div>
             </div>
             <div id="googleUserBadge" class="google-user-badge"></div>
             <div id="googleSyncStatus" class="preview-compact-note">Chưa đăng nhập Google.</div>
@@ -662,7 +676,10 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             </tr>
             <tr>
                 <td colspan="2" style="min-height: 80px; vertical-align: top;">
-                    <span class="text-black" id="lbl_attach">附带照片+文件 / Ảnh chụp + tài liệu đính kèm:</span>
+                    <div class="dh-inline-photo-row">
+                        <span class="text-black" id="lbl_attach">附带照片+文件 / Ảnh chụp + tài liệu đính kèm:</span>
+                        <button type="button" class="dh-inline-photo-btn" id="btnInlineAttach" data-html2canvas-ignore="true">＋ Chèn ảnh</button>
+                    </div>
                     <div id="previewImagesContainer" class="preview-images-grid"></div>
                 </td>
             </tr>
@@ -2073,6 +2090,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         // Word uses a page break for each photograph, with exact proportional dimensions.
         const src=document.getElementById('invoice-preview-area');
         const clone=src.cloneNode(true);
+        clone.querySelectorAll('.dh-inline-photo-btn').forEach(el=>el.remove());
         clone.querySelector('#previewImagesContainer')?.remove();
         const photos=Array.from(src.querySelectorAll('#previewImagesContainer img'));
         let photosHTML='';
@@ -2277,16 +2295,52 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
 let dhQuickEditState={targetId:'',multiline:false};
 let dhPreviewScale=1;
 let dhPinchStart=null;
+let dhPanStart=null;
+let dhDidPan=false;
+let dhNaturalSize={w:0,h:0};
 let dhGoogleToken='';
-const DH_GOOGLE_STORAGE_KEY='donghui_google_sync_v19';
-const DH_DRIVE_FILE_NAME='donghui_notice_sync_v19.json';
+const DH_GOOGLE_STORAGE_KEY='donghui_google_sync_v20';
+const DH_DRIVE_FILE_NAME='donghui_notice_sync_v20.json';
 
 function dhGetEl(id){return document.getElementById(id)}
 function dhOpenPanel(id){dhGetEl(id)?.classList.add('is-open')}
 function dhClosePanel(id){dhGetEl(id)?.classList.remove('is-open')}
-function dhSetScale(v){dhPreviewScale=Math.max(.35,Math.min(2.4,v));const p=dhGetEl('invoice-preview-area');if(p)p.style.transform=`scale(${dhPreviewScale})`;const b=dhGetEl('dhScaleBadge');if(b)b.textContent=Math.round(dhPreviewScale*100)+'%'}
-function dhFitToScreen(){const vp=dhGetEl('reportViewport'),p=dhGetEl('invoice-preview-area');if(!vp||!p)return; p.style.transform='none';const available=Math.max(100,vp.clientWidth-6);const natural=p.offsetWidth||793;dhSetScale(Math.min(1,available/natural));vp.scrollLeft=0;vp.scrollTop=0;const l=dhGetEl('fitLabel');if(l)l.textContent='Vừa màn hình'}
-function dhBindPinch(){const vp=dhGetEl('reportViewport');if(!vp)return;const pts=new Map();vp.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});try{vp.setPointerCapture(e.pointerId)}catch(_){}});vp.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){e.preventDefault();const a=[...pts.values()];const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(!dhPinchStart){dhPinchStart={d,scale:dhPreviewScale};return}dhSetScale(dhPinchStart.scale*(d/dhPinchStart.d))}}, {passive:false});['pointerup','pointercancel','lostpointercapture'].forEach(t=>vp.addEventListener(t,e=>{pts.delete(e.pointerId);if(pts.size<2)dhPinchStart=null}))}
+function dhEnsureStage(){
+ const vp=dhGetEl('reportViewport'),p=dhGetEl('invoice-preview-area');if(!vp||!p)return null;
+ let stage=dhGetEl('reportStage');
+ if(!stage){stage=document.createElement('div');stage.id='reportStage';stage.className='report-stage';p.parentNode.insertBefore(stage,p);stage.appendChild(p)}
+ p.style.position='absolute';p.style.left='0';p.style.top='0';p.style.transformOrigin='top left';
+ if(!dhNaturalSize.w){p.style.transform='none';dhNaturalSize={w:p.offsetWidth||793,h:p.offsetHeight||1122}}
+ return stage;
+}
+function dhSetScale(v){
+ dhPreviewScale=Math.max(.35,Math.min(2.6,v));const p=dhGetEl('invoice-preview-area'),stage=dhEnsureStage();if(!p||!stage)return;
+ p.style.transform=`scale(${dhPreviewScale})`;
+ stage.style.width=Math.ceil(dhNaturalSize.w*dhPreviewScale)+'px';stage.style.height=Math.ceil(dhNaturalSize.h*dhPreviewScale)+'px';
+ const b=dhGetEl('dhScaleBadge');if(b)b.textContent=Math.round(dhPreviewScale*100)+'%';
+}
+function dhFitToScreen(){
+ const vp=dhGetEl('reportViewport'),p=dhGetEl('invoice-preview-area');if(!vp||!p)return;dhEnsureStage();
+ const available=Math.max(100,vp.clientWidth-8);dhSetScale(Math.min(1,available/dhNaturalSize.w));vp.scrollLeft=0;vp.scrollTop=0;
+ const l=dhGetEl('fitLabel');if(l)l.textContent='Vừa màn hình';
+}
+function dhBindPanZoom(){
+ const vp=dhGetEl('reportViewport');if(!vp)return;const pts=new Map();
+ vp.addEventListener('pointerdown',e=>{
+   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});try{vp.setPointerCapture(e.pointerId)}catch(_){ }
+   if(pts.size===1){dhPanStart={x:e.clientX,y:e.clientY,left:vp.scrollLeft,top:vp.scrollTop,moved:false};vp.classList.add('is-panning')}
+   if(pts.size===2){const a=[...pts.values()];dhPinchStart={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),scale:dhPreviewScale};dhPanStart=null}
+ });
+ vp.addEventListener('pointermove',e=>{
+   if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(pts.size===2){e.preventDefault();const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(dhPinchStart)dhSetScale(dhPinchStart.scale*(d/dhPinchStart.d));return}
+   if(pts.size===1&&dhPanStart){const dx=e.clientX-dhPanStart.x,dy=e.clientY-dhPanStart.y;if(Math.abs(dx)>3||Math.abs(dy)>3){dhPanStart.moved=true;dhDidPan=true;}if(vp.scrollWidth>vp.clientWidth||vp.scrollHeight>vp.clientHeight){e.preventDefault();vp.scrollLeft=dhPanStart.left-dx;vp.scrollTop=dhPanStart.top-dy}}
+ },{passive:false});
+ const end=e=>{pts.delete(e.pointerId);if(pts.size<2)dhPinchStart=null;if(pts.size===0){dhPanStart=null;vp.classList.remove('is-panning')}};
+ ['pointerup','pointercancel','lostpointercapture'].forEach(t=>vp.addEventListener(t,end));
+ // suppress accidental click after dragging
+ vp.addEventListener('click',e=>{if(dhDidPan){e.preventDefault();e.stopPropagation();dhDidPan=false}},true);
+}
 function dhMakeEditable(){[
  ['out_congtrinh','in_congtrinh','Tên công trình',false],['out_hangmuc','in_hangmuc','Tên hạng mục',false],['out_donvithicong','in_donvithicong','Đơn vị thi công',false],['out_hopdong','in_hopdong','Mã số hợp đồng',false],['out_mathongbao','in_mathongbao','Mã số thông báo',false],['out_noidung','in_noidung','Nội dung thông báo',true],['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],['out_ngay3','in_ngay','Ngày lập biên bản',false]
 ].forEach(([o,i,l,m])=>{const el=dhGetEl(o);if(!el)return;el.classList.add('editable-highlight');if(m)el.classList.add('editable-block');el.onclick=()=>dhOpenQuickEdit(i,l,m)})}
@@ -2298,17 +2352,34 @@ if(window.visualViewport){window.visualViewport.addEventListener('resize',dhPlac
 
 function dhInitGoogle(){const raw=localStorage.getItem(DH_GOOGLE_STORAGE_KEY);if(raw){try{const c=JSON.parse(raw);if(c.clientId)dhGetEl('googleClientId').value=c.clientId}catch(_){}}dhGetEl('googleClientId')?.addEventListener('change',()=>{localStorage.setItem(DH_GOOGLE_STORAGE_KEY,JSON.stringify({clientId:dhGetEl('googleClientId').value.trim()}));dhInitTokenClient()});dhGetEl('btnGoogleSignIn')?.addEventListener('click',dhGoogleSignIn);dhGetEl('btnGoogleSignOut')?.addEventListener('click',dhGoogleSignOut);dhGetEl('btnDriveSave')?.addEventListener('click',dhSaveToDrive);dhGetEl('btnDriveLoad')?.addEventListener('click',dhLoadFromDrive);dhInitTokenClient()}
 function dhStatus(msg,ok=false){const e=dhGetEl('googleSyncStatus');if(e)e.textContent=msg;const b=dhGetEl('googleUserBadge');if(b&&!ok&&!b.textContent)b.style.display='none'}
-function dhInitTokenClient(){const id=dhGetEl('googleClientId')?.value.trim();if(!id||!window.google?.accounts?.oauth2){dhStatus('Chưa cấu hình Google Client ID.');return}window.dhTokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email openid profile',callback:r=>{if(r?.access_token){dhGoogleToken=r.access_token;dhFetchProfile();dhStatus('Đăng nhập Google thành công.',true)}}})}
-function dhGoogleSignIn(){dhInitTokenClient();if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
+function dhValidGoogleClientId(id){return /^[0-9]+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(id||'')}
+function dhInitTokenClient(){
+ const id=dhGetEl('googleClientId')?.value.trim(),help=dhGetEl('googleClientHelp');
+ if(!id){dhStatus('Chưa cấu hình Google OAuth Web Client ID.');return false}
+ if(!dhValidGoogleClientId(id)){dhStatus('Client ID không hợp lệ. Không nhập URL/API key; Client ID phải kết thúc bằng .apps.googleusercontent.com');if(help)help.classList.add('google-client-error');window.dhTokenClient=null;return false}
+ if(help)help.classList.remove('google-client-error');
+ if(!window.google?.accounts?.oauth2){dhStatus('Google Identity Services chưa tải xong. Hãy thử lại sau vài giây.');return false}
+ window.dhTokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email openid profile',callback:r=>{if(r?.error){dhStatus('Google OAuth: '+r.error);return}if(r?.access_token){dhGoogleToken=r.access_token;dhFetchProfile();dhStatus('Đăng nhập Google thành công.',true)}},error_callback:e=>{dhStatus('Không mở được đăng nhập Google. Kiểm tra Web Client ID và Authorized JavaScript origins trên Google Cloud.') }});return true
+}
+function dhGoogleSignIn(){if(!dhInitTokenClient())return;if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
 function dhGoogleSignOut(){if(window.google?.accounts?.oauth2&&dhGoogleToken)google.accounts.oauth2.revoke(dhGoogleToken,()=>{});dhGoogleToken='';const b=dhGetEl('googleUserBadge');if(b){b.textContent='';b.style.display='none'}dhStatus('Đã đăng xuất Google.')}
 async function dhFetchProfile(){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+dhGoogleToken}});const m=await r.json();const b=dhGetEl('googleUserBadge');if(b){b.textContent='Đang đăng nhập: '+(m.email||m.name||'Google user');b.style.display='inline-block'}}catch(_){}}
-function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v1.9',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
+function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.0',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
 function dhApplyPayload(p){if(p.record&&typeof dhRecord!=='undefined')dhRecord=p.record;if(p.editable)for(const [id,v]of Object.entries(p.editable)){const e=dhGetEl(id);if(e)e.value=v}try{if(typeof dhRenderProfiles==='function')dhRenderProfiles()}catch(_){}if(typeof syncData==='function')syncData();if(typeof dhSaveDraft==='function')dhSaveDraft()}
 async function dhFindDriveFile(){const q=encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`,{headers:{Authorization:'Bearer '+dhGoogleToken}});const d=await r.json();return d.files?.[0]||null}
 async function dhSaveToDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const payload=dhPayload(),file=await dhFindDriveFile(),meta={name:DH_DRIVE_FILE_NAME,parents:['appDataFolder'],mimeType:'application/json'},boundary='-------314159265358979323846',delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--',body=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/json\r\n\r\n'+JSON.stringify(payload)+close,url=file?`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';const r=await fetch(url,{method:file?'PATCH':'POST',headers:{Authorization:'Bearer '+dhGoogleToken,'Content-Type':'multipart/related; boundary='+boundary},body});dhStatus(r.ok?'Đã lưu dữ liệu lên Google Drive.':'Lưu Google Drive chưa thành công.',r.ok)}
 async function dhLoadFromDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const f=await dhFindDriveFile();if(!f)return dhStatus('Chưa có dữ liệu đồng bộ trên Drive.');const r=await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:'Bearer '+dhGoogleToken}});if(!r.ok)return dhStatus('Không tải được dữ liệu từ Drive.');dhApplyPayload(await r.json());dhStatus('Đã tải dữ liệu từ Google Drive.',true)}
 
-(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhMakeEditable();dhBindPinch();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhInitGoogle()}}
+
+function dhHideDirectEditSettings(){
+ const hideIds=['in_congtrinh','in_hangmuc','in_donvithicong','in_hopdong','in_giamdoc','in_phogiamdoc','in_kysu','in_thicongky','in_ngay'];
+ hideIds.forEach(id=>{const el=dhGetEl(id);if(!el)return;const group=el.closest('.form-group');if(group)group.classList.add('dh-direct-edit-hidden')});
+ // hide a row only if every form-group in it is hidden
+ dhGetEl('dhSettingsPanel')?.querySelectorAll('.row').forEach(row=>{const groups=[...row.querySelectorAll(':scope > .form-group')];if(groups.length&&groups.every(g=>g.classList.contains('dh-direct-edit-hidden')))row.classList.add('dh-direct-edit-hidden')});
+}
+function dhOpenAttachmentPicker(){dhGetEl('attachInput')?.click()}
+
+(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhInitGoogle()}}
 )();
 </script>
 

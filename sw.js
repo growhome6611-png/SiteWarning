@@ -1,4 +1,4 @@
-const CACHE = 'donghui-thongbao-v1.7-web';
+const CACHE = 'donghui-thongbao-v2.0-web';
 const CORE = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
