@@ -410,6 +410,11 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
 .dh-inline-photo-actions{display:flex;gap:6px;align-items:center;flex:0 0 auto}.dh-inline-photo-btn.secondary{background:#2563eb}.dh-inline-photo-btn.replace{background:#0f6cbd}
 .dh-google-actions-v22{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.dh-google-actions-v22 button{padding:9px 4px;font-size:12px}.dh-drive-link-wrap{margin-top:10px}.dh-drive-link-wrap input{font-size:13px;background:#fff}.dh-drive-note{font-family:Arial,sans-serif;font-size:12px;color:#475569;margin-top:6px;line-height:1.35}.dh-drive-status-account{font-weight:700;color:#166534}
 @media(max-width:840px){#invoice-preview-area .header-top{min-height:62px!important;grid-template-columns:78px minmax(0,1fr) 6px!important;column-gap:2px!important}#invoice-preview-area .logo-area{width:74px!important;height:40px!important;min-width:74px!important;max-width:74px!important;margin-left:-5px!important}#invoice-preview-area .logo-area span{font-size:11pt!important;line-height:1.02!important}#invoice-preview-area .title-center-box{padding:0 1px!important;min-height:44px!important}#invoice-preview-area .doc-title-main{font-size:11.5pt!important;line-height:1.1!important}#invoice-preview-area .doc-title-sub{font-size:11pt!important;line-height:1.1!important}.dh-inline-action-btn,.dh-inline-photo-btn{font-size:9px!important;padding:4px 6px!important}.dh-google-actions-v22{grid-template-columns:repeat(4,1fr);gap:5px}.dh-google-actions-v22 button{font-size:10px;padding:8px 2px}}
+
+.dh-history-actions{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.dh-history-actions button{flex:1 1 130px;padding:9px 8px;font-size:12px}
+.dh-history-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;margin-top:8px}.dh-history-empty{font-family:Arial,sans-serif;font-size:12px;color:#64748b;padding:8px 0}
+.dh-history-item{border:1px solid #dbe6f0;border-radius:10px;padding:9px;background:#fff}.dh-history-name{font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#12345b;overflow-wrap:anywhere}.dh-history-meta{font-family:Arial,sans-serif;font-size:11px;color:#64748b;margin-top:3px}.dh-history-buttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.dh-history-buttons button{flex:1 1 110px;padding:7px 6px;font-size:11px;box-shadow:none}.dh-open-local{background:#2563eb}.dh-open-drive{background:#0f766e}.dh-delete-history{background:#64748b}
+
 @media print{.dh-inline-action-btn,.dh-inline-photo-actions{display:none!important}}
 </style>
 
@@ -474,6 +479,15 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
                     <input type="text" id="dhSharedDriveLink" placeholder="Dán link thư mục Google Drive dùng chung...">
                     <div class="dh-drive-note">Khi có link thư mục, nút “Lưu lên Drive” sẽ tải PDF biên bản vào đúng thư mục này.</div>
                 </div>
+            </div>
+            <div class="dh-setting-card">
+                <div class="dh-setting-title">Biên bản đã xuất</div>
+                <div class="dh-setting-sub">Xem lại PDF đã lưu trên thiết bị và các PDF đã tải lên Google Drive.</div>
+                <div class="dh-history-actions">
+                    <button type="button" class="btn-secondary" id="dhRefreshLocalHistory">Làm mới danh sách</button>
+                    <button type="button" class="btn-drive2" id="dhRefreshDriveHistory">Đồng bộ từ Drive</button>
+                </div>
+                <div class="dh-history-list" id="dhPdfHistoryList"><div class="dh-history-empty">Chưa có biên bản nào được xuất.</div></div>
             </div>
         </div>
 
@@ -2157,20 +2171,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         if (exportBusy) return;
         exportBusy = true;
         try {
-            const pages = await getExportCanvases();
-            const jpegPages = pages.map(canvas => ({
-                width: canvas.width,
-                height: canvas.height,
-                dataUrl: canvas.toDataURL('image/jpeg', 0.92)
-            }));
-            try {
-                const pdfBlob = buildPdfBlobFromJpegData(jpegPages);
-                saveBlob(pdfBlob, 'Bien_Ban_DongHui_Nhieu_Trang.pdf', 'application/pdf');
-            } catch (pdfErr) {
-                console.error(pdfErr);
-                openPrintDialogWithImages(jpegPages);
-                alert('Đã chuyển sang chế độ in PDF dự phòng. Hãy chọn "Save as PDF" để lưu file.');
-            }
+            await dhExportPdfLocalAndDrive({download:true, uploadIfSignedIn:true});
         } catch (e) {
             console.error(e);
             alert('Không xuất được PDF: ' + e.message);
@@ -2486,7 +2487,7 @@ function dhInitTokenClient(){
 function dhGoogleSignIn(){if(!dhInitTokenClient())return;if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
 function dhGoogleSignOut(){if(window.google?.accounts?.oauth2&&dhGoogleToken)google.accounts.oauth2.revoke(dhGoogleToken,()=>{});dhGoogleToken='';const b=dhGetEl('googleUserBadge');if(b){b.textContent='';b.style.display='none'}dhStatus('Đã đăng xuất Google.')}
 async function dhFetchProfile(){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+dhGoogleToken}});const m=await r.json();const b=dhGetEl('googleUserBadge');if(b){b.textContent='Đang đăng nhập: '+(m.email||m.name||'Google user');b.style.display='inline-block'}const c=dhGetEl('dhCompactGoogleStatus');if(c)c.textContent='Đã đăng nhập: '+(m.email||m.name||'Google user')}catch(_){}}
-function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.2.1',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
+function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.3.0',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
 function dhApplyPayload(p){if(p.record&&typeof dhRecord!=='undefined')dhRecord=p.record;if(p.editable)for(const [id,v]of Object.entries(p.editable)){const e=dhGetEl(id);if(e)e.value=v}try{if(typeof dhRenderProfiles==='function')dhRenderProfiles()}catch(_){}if(typeof syncData==='function')syncData();if(typeof dhSaveDraft==='function')dhSaveDraft()}
 async function dhFindDriveFile(){const q=encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`,{headers:{Authorization:'Bearer '+dhGoogleToken}});const d=await r.json();return d.files?.[0]||null}
 async function dhSaveToDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const payload=dhPayload(),file=await dhFindDriveFile(),meta={name:DH_DRIVE_FILE_NAME,parents:['appDataFolder'],mimeType:'application/json'},boundary='-------314159265358979323846',delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--',body=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/json\r\n\r\n'+JSON.stringify(payload)+close,url=file?`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';const r=await fetch(url,{method:file?'PATCH':'POST',headers:{Authorization:'Bearer '+dhGoogleToken,'Content-Type':'multipart/related; boundary='+boundary},body});dhStatus(r.ok?'Đã lưu dữ liệu lên Google Drive.':'Lưu Google Drive chưa thành công.',r.ok)}
@@ -2509,23 +2510,27 @@ async function dhBuildPdfBlob(){
  const jpegPages=pages.map(canvas=>({width:canvas.width,height:canvas.height,dataUrl:canvas.toDataURL('image/jpeg',0.92)}));
  return buildPdfBlobFromJpegData(jpegPages);
 }
-async function dhUploadCurrentPdfToDrive(){
- if(!dhGoogleToken){dhStatus('Bạn cần đăng nhập Google trước.');dhOpenPanel('dhSettingsPanel');return;}
- try{
-   dhStatus('Đang tạo PDF và tải lên Google Drive...');
-   const blob=await dhBuildPdfBlob();
-   const ts=new Date().toISOString().replace(/[:.]/g,'-');
-   const folderId=dhGetSharedFolderId();
-   const meta={name:`Bien_Ban_DongHui_${ts}.pdf`,mimeType:'application/pdf'};if(folderId)meta.parents=[folderId];
-   const boundary='-------donghui-v21-'+Date.now(),delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--';
-   const bin=await blob.arrayBuffer();
-   const header=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/pdf\r\n\r\n';
-   const body=new Blob([header,bin,close],{type:'multipart/related; boundary='+boundary});
-   const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink',{method:'POST',headers:{Authorization:'Bearer '+dhGoogleToken},body});
-   if(!r.ok)throw new Error('Google Drive trả về '+r.status);
-   dhStatus(folderId?'Đã tải PDF vào thư mục Drive dùng chung.':'Đã xuất PDF lên Google Drive.',true);
- }catch(e){console.error(e);dhStatus('Không thể xuất PDF lên Drive: '+e.message);}
-}
+const DH_PDF_HISTORY_KEY='donghui_pdf_history_v23';
+const DH_PDF_DB_NAME='donghui_pdf_archive_v23';
+const DH_PDF_DB_STORE='pdfs';
+function dhPdfDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DH_PDF_DB_NAME,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(DH_PDF_DB_STORE))db.createObjectStore(DH_PDF_DB_STORE,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function dhStorePdfBlob(id,name,blob){const db=await dhPdfDb();return new Promise((resolve,reject)=>{const tx=db.transaction(DH_PDF_DB_STORE,'readwrite');tx.objectStore(DH_PDF_DB_STORE).put({id,name,blob,updatedAt:new Date().toISOString()});tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
+async function dhGetPdfBlob(id){const db=await dhPdfDb();return new Promise((resolve,reject)=>{const tx=db.transaction(DH_PDF_DB_STORE,'readonly');const req=tx.objectStore(DH_PDF_DB_STORE).get(id);req.onsuccess=()=>{db.close();resolve(req.result?.blob||null)};req.onerror=()=>{db.close();reject(req.error)}})}
+async function dhDeletePdfBlob(id){const db=await dhPdfDb();return new Promise((resolve,reject)=>{const tx=db.transaction(DH_PDF_DB_STORE,'readwrite');tx.objectStore(DH_PDF_DB_STORE).delete(id);tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
+function dhReadPdfHistory(){try{const a=JSON.parse(localStorage.getItem(DH_PDF_HISTORY_KEY)||'[]');return Array.isArray(a)?a:[]}catch(_){return[]}}
+function dhWritePdfHistory(a){localStorage.setItem(DH_PDF_HISTORY_KEY,JSON.stringify(a.slice(0,200)))}
+function dhSafeFilePart(v){return String(v||'').trim().replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,'_').slice(0,60)}
+function dhPdfFileName(){const project=dhSafeFilePart(dhGetEl('in_congtrinh')?.value||'Cong_trinh');const type=dhSafeFilePart(dhGetEl('lbl_title_sub')?.textContent||'Bien_ban');const d=new Date(),stamp=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;return `${type}_${project}_${stamp}.pdf`}
+function dhUpsertPdfHistory(rec){let a=dhReadPdfHistory();const idx=a.findIndex(x=>(rec.driveId&&x.driveId===rec.driveId)||x.id===rec.id);if(idx>=0)a[idx]={...a[idx],...rec};else a.unshift(rec);a.sort((x,y)=>String(y.createdAt||'').localeCompare(String(x.createdAt||'')));dhWritePdfHistory(a);dhRenderPdfHistory()}
+function dhFormatHistoryTime(v){try{return new Date(v).toLocaleString('vi-VN')}catch(_){return v||''}}
+function dhEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dhRenderPdfHistory(){const box=dhGetEl('dhPdfHistoryList');if(!box)return;const a=dhReadPdfHistory();if(!a.length){box.innerHTML='<div class="dh-history-empty">Chưa có biên bản nào được xuất.</div>';return}box.innerHTML=a.map(r=>`<div class="dh-history-item"><div class="dh-history-name">${dhEsc(r.name)}</div><div class="dh-history-meta">${dhEsc(dhFormatHistoryTime(r.createdAt))}${r.driveId?' · Đã lưu Drive':' · Chỉ lưu thiết bị'}</div><div class="dh-history-buttons">${r.localId?`<button type="button" class="dh-open-local" onclick="dhOpenLocalPdf('${dhEsc(r.id)}')">Mở bản lưu</button>`:''}${r.webViewLink?`<button type="button" class="dh-open-drive" onclick="window.open('${dhEsc(r.webViewLink)}','_blank')">Mở trên Drive</button>`:''}<button type="button" class="dh-delete-history" onclick="dhRemoveHistory('${dhEsc(r.id)}')">Xóa lịch sử</button></div></div>`).join('')}
+async function dhOpenLocalPdf(id){try{const rec=dhReadPdfHistory().find(x=>x.id===id),blob=await dhGetPdfBlob(id);if(!blob)return alert('Bản PDF lưu trên thiết bị không còn tồn tại. Bạn có thể mở bản trên Drive nếu có.');const url=URL.createObjectURL(blob);const w=window.open(url,'_blank');if(!w){const a=document.createElement('a');a.href=url;a.download=rec?.name||'Bien_Ban_DongHui.pdf';a.click()}setTimeout(()=>URL.revokeObjectURL(url),60000)}catch(e){alert('Không mở được bản PDF đã lưu: '+e.message)}}
+async function dhRemoveHistory(id){let a=dhReadPdfHistory();const rec=a.find(x=>x.id===id);a=a.filter(x=>x.id!==id);dhWritePdfHistory(a);if(rec?.localId)try{await dhDeletePdfBlob(id)}catch(_){}dhRenderPdfHistory()}
+async function dhUploadPdfBlobToDrive(blob,name){if(!dhGoogleToken)throw new Error('Chưa đăng nhập Google');const folderId=dhGetSharedFolderId();const meta={name,mimeType:'application/pdf'};if(folderId)meta.parents=[folderId];const boundary='-------donghui-pdf-'+Date.now(),delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--';const bin=await blob.arrayBuffer();const header=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/pdf\r\n\r\n';const body=new Blob([header,bin,close],{type:'multipart/related; boundary='+boundary});const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,createdTime',{method:'POST',headers:{Authorization:'Bearer '+dhGoogleToken},body});if(!r.ok){let detail='';try{detail=(await r.json())?.error?.message||''}catch(_){}throw new Error('Google Drive '+r.status+(detail?': '+detail:''))}return await r.json()}
+async function dhExportPdfLocalAndDrive({download=true,uploadIfSignedIn=true,requireDrive=false}={}){const blob=await dhBuildPdfBlob();const name=dhPdfFileName(),id='local-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),createdAt=new Date().toISOString();await dhStorePdfBlob(id,name,blob);let rec={id,localId:id,name,createdAt};dhUpsertPdfHistory(rec);if(download)saveBlob(blob,name,'application/pdf');if(uploadIfSignedIn&&dhGoogleToken){try{dhStatus('Đang lưu PDF lên Google Drive...');const drive=await dhUploadPdfBlobToDrive(blob,name);rec={...rec,driveId:drive.id,webViewLink:drive.webViewLink||`https://drive.google.com/file/d/${drive.id}/view`,driveCreatedTime:drive.createdTime};dhUpsertPdfHistory(rec);dhStatus('Đã lưu PDF vào máy và Google Drive.',true)}catch(e){dhStatus('Đã lưu PDF vào máy, nhưng chưa lưu được Drive: '+e.message);if(requireDrive)throw e}}else if(requireDrive){dhOpenPanel('dhSettingsPanel');dhStatus('PDF đã lưu vào máy. Hãy đăng nhập Google để lưu thêm lên Drive.')}else{dhStatus('Đã lưu PDF vào máy. Đăng nhập Google để tự động lưu thêm lên Drive.',true)}return rec}
+async function dhUploadCurrentPdfToDrive(){try{await dhExportPdfLocalAndDrive({download:true,uploadIfSignedIn:true,requireDrive:true})}catch(e){console.error(e)}}
+async function dhRefreshDriveHistory(){if(!dhGoogleToken){dhStatus('Bạn cần đăng nhập Google trước.');dhOpenPanel('dhSettingsPanel');return}try{dhStatus('Đang đọc danh sách PDF từ Drive...');const folderId=dhGetSharedFolderId();let q="mimeType='application/pdf' and trashed=false";if(folderId)q=`'${folderId.replace(/'/g,"\\'")}' in parents and mimeType='application/pdf' and trashed=false`;else q+=" and name contains 'BIÊN_BẢN'";const url='https://www.googleapis.com/drive/v3/files?orderBy=createdTime desc&pageSize=100&fields=files(id,name,createdTime,webViewLink)&q='+encodeURIComponent(q);const r=await fetch(url,{headers:{Authorization:'Bearer '+dhGoogleToken}});if(!r.ok)throw new Error('Google Drive '+r.status);const data=await r.json();for(const f of(data.files||[])){const existing=dhReadPdfHistory().find(x=>x.driveId===f.id);dhUpsertPdfHistory({id:existing?.id||('drive-'+f.id),localId:existing?.localId||'',name:f.name,createdAt:f.createdTime,driveId:f.id,webViewLink:f.webViewLink||`https://drive.google.com/file/d/${f.id}/view`})}dhRenderPdfHistory();dhStatus(`Đã đồng bộ ${data.files?.length||0} PDF từ Drive.`,true)}catch(e){dhStatus('Không đọc được danh sách Drive: '+e.message)}}
 function dhOpenDocTypePopup(){
  const pop=dhGetEl('dhDocTypePopup');if(!pop)return;const cur=dhGetEl('docType')?.value;
  pop.querySelectorAll('.dh-doc-type-option').forEach(b=>b.classList.toggle('active',b.dataset.type===cur));pop.classList.add('is-open');pop.setAttribute('aria-hidden','false');
@@ -2547,7 +2552,7 @@ function dhBindCompactSettings(){
  dhGetEl('dhCompactGoogleSignOut')?.addEventListener('click',dhGoogleSignOut);
  dhGetEl('dhCompactDriveSave')?.addEventListener('click',dhUploadCurrentPdfToDrive);
  dhGetEl('dhCompactDriveLoad')?.addEventListener('click',dhLoadFromDrive);
- dhInitSharedDriveLink();
+ dhInitSharedDriveLink();dhRenderPdfHistory();dhGetEl('dhRefreshLocalHistory')?.addEventListener('click',dhRenderPdfHistory);dhGetEl('dhRefreshDriveHistory')?.addEventListener('click',dhRefreshDriveHistory);
 }
 
 
