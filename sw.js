@@ -1,4 +1,4 @@
-const CACHE = 'donghui-v2.2';
+const CACHE = 'donghui-v2.2.1';
 const CORE = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));

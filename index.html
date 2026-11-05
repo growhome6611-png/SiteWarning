@@ -397,15 +397,16 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
 
 
 /* v2.2 direct inline tools + fixed logo + shared Drive */
-#invoice-preview-area .header-top{position:relative;min-height:54px}
-#invoice-preview-area .logo-area{width:86px!important;height:42px!important;min-width:86px!important;max-width:86px!important;overflow:hidden;display:flex!important;align-items:center!important;justify-content:center!important;left:0!important;top:3px!important}
+#invoice-preview-area .header-top{position:relative;min-height:92px}
+#btnExportMenu{display:none!important}
+#invoice-preview-area .logo-area{width:172px!important;height:84px!important;min-width:172px!important;max-width:172px!important;overflow:hidden;display:flex!important;align-items:center!important;justify-content:center!important;left:0!important;top:3px!important}
 #invoice-preview-area .logo-area img{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;display:block!important}
-#invoice-preview-area .logo-area span{font-size:12pt!important;white-space:nowrap}
-#invoice-preview-area .title-center-box{padding-left:100px!important;padding-right:18px!important;min-height:48px;display:flex;flex-direction:column;justify-content:center}
+#invoice-preview-area .logo-area span{font-size:18pt!important;white-space:nowrap}
+#invoice-preview-area .title-center-box{padding-left:186px!important;padding-right:18px!important;min-height:84px;display:flex;flex-direction:column;justify-content:center}
 .dh-inline-content-row{display:flex;align-items:flex-start;gap:8px}.dh-inline-content-text{flex:1;min-width:0}.dh-inline-action-btn{flex:0 0 auto;background:#0d6efd!important;color:#fff!important;border:0;border-radius:6px!important;padding:6px 9px!important;font-size:11px!important;box-shadow:none!important;line-height:1.1}
 .dh-inline-photo-actions{display:flex;gap:6px;align-items:center;flex:0 0 auto}.dh-inline-photo-btn.secondary{background:#2563eb}.dh-inline-photo-btn.replace{background:#0f6cbd}
 .dh-google-actions-v22{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.dh-google-actions-v22 button{padding:9px 4px;font-size:12px}.dh-drive-link-wrap{margin-top:10px}.dh-drive-link-wrap input{font-size:13px;background:#fff}.dh-drive-note{font-family:Arial,sans-serif;font-size:12px;color:#475569;margin-top:6px;line-height:1.35}.dh-drive-status-account{font-weight:700;color:#166534}
-@media(max-width:840px){#invoice-preview-area .logo-area{width:72px!important;height:34px!important;min-width:72px!important;max-width:72px!important;top:3px!important}#invoice-preview-area .title-center-box{padding-left:82px!important;padding-right:6px!important}.dh-inline-action-btn,.dh-inline-photo-btn{font-size:9px!important;padding:4px 6px!important}.dh-google-actions-v22{grid-template-columns:repeat(4,1fr);gap:5px}.dh-google-actions-v22 button{font-size:10px;padding:8px 2px}}
+@media(max-width:840px){#invoice-preview-area .header-top{min-height:72px!important}#invoice-preview-area .logo-area{width:128px!important;height:60px!important;min-width:128px!important;max-width:128px!important;top:3px!important}#invoice-preview-area .logo-area span{font-size:14pt!important}#invoice-preview-area .title-center-box{padding-left:138px!important;padding-right:6px!important;min-height:60px}.dh-inline-action-btn,.dh-inline-photo-btn{font-size:9px!important;padding:4px 6px!important}.dh-google-actions-v22{grid-template-columns:repeat(4,1fr);gap:5px}.dh-google-actions-v22 button{font-size:10px;padding:8px 2px}}
 @media print{.dh-inline-action-btn,.dh-inline-photo-actions{display:none!important}}
 </style>
 
@@ -447,6 +448,13 @@ body{padding:0;background:#eef3f8;overflow-x:hidden}
                     <select id="dhCompactUiLang"></select>
                     <select id="dhCompactSubLang"></select>
                 </div>
+            </div>
+            <div class="dh-setting-card">
+                <div class="dh-setting-title">Google Dịch / API Key</div>
+                <div class="dh-setting-sub">Nhập Google Translate API key để dùng nút dịch tự động cho phần nội dung thông báo.</div>
+                <label for="dhCompactApiKey" style="margin-bottom:6px;display:block;font-weight:700;color:#12345b">API Key Google Dịch</label>
+                <input type="password" id="dhCompactApiKey" autocomplete="off" placeholder="Dán API Key để dịch tự động...">
+                <label style="margin-top:7px;font-size:12px;font-weight:normal;display:flex;align-items:center;gap:6px"><input type="checkbox" id="dhCompactSaveApiKey" style="width:auto"> Ghi nhớ API Key trên thiết bị này (không mã hóa)</label>
             </div>
             <div class="dh-setting-card">
                 <div class="dh-setting-title">Đồng bộ Google Drive</div>
@@ -2318,7 +2326,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             if(!confirm('Xóa TẤT CẢ dữ liệu đã lưu, gồm các mục nhập và API Key?'))return;
             localStorage.removeItem(DH_STORAGE_KEY);
             dhRecord={draft:{},projects:[],contractors:[],rememberApi:false,apiKey:''};
-            dhGet('saveApiKey').checked=false;dhGet('apiKey').value='';
+            dhGet('saveApiKey').checked=false;dhGet('apiKey').value='';dhSyncLegacyApiToCompact();
         } else return;
         dhWriteStore();dhRenderProfiles();
     }
@@ -2331,6 +2339,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         }
         dhGet('saveApiKey').checked=Boolean(dhRecord.rememberApi);
         dhGet('apiKey').value=dhRecord.rememberApi ? (dhRecord.apiKey||'') : '';
+        dhSyncLegacyApiToCompact();
         dhRenderProfiles();
         dhGet('dh_saved_project').addEventListener('change',event=>{
             if(event.target.value){dhGet('in_congtrinh').value=event.target.value;syncData();dhQueueSave();}
@@ -2410,20 +2419,45 @@ function dhFitToScreen(){
 }
 function dhBindPanZoom(){
  const vp=dhGetEl('reportViewport');if(!vp)return;const pts=new Map();
+ const isInteractiveTarget=el=>!!el?.closest?.('.editable-highlight,button,input,textarea,select,label,a,.logo-area,.title-center-box');
  vp.addEventListener('pointerdown',e=>{
-   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});try{vp.setPointerCapture(e.pointerId)}catch(_){ }
-   if(pts.size===1){dhPanStart={x:e.clientX,y:e.clientY,left:vp.scrollLeft,top:vp.scrollTop,moved:false};vp.classList.add('is-panning')}
-   if(pts.size===2){const a=[...pts.values()];dhPinchStart={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),scale:dhPreviewScale};dhPanStart=null}
+   // Every new gesture starts clean. This prevents an old pan from swallowing a later click on desktop.
+   dhDidPan=false;
+   const interactive=isInteractiveTarget(e.target);
+   // Mouse/pen clicks on editable controls must never be captured by the pan layer.
+   if(interactive && e.pointerType!=='touch')return;
+   pts.set(e.pointerId,{x:e.clientX,y:e.clientY,interactive});
+   // Do not capture a single touch that starts on an editable field; allow its normal click/tap.
+   if(!(interactive && pts.size===1)){try{vp.setPointerCapture(e.pointerId)}catch(_){ }}
+   if(pts.size===1){
+     dhPanStart=interactive?null:{x:e.clientX,y:e.clientY,left:vp.scrollLeft,top:vp.scrollTop,moved:false};
+     if(dhPanStart)vp.classList.add('is-panning');
+   }
+   if(pts.size===2){
+     const a=[...pts.values()];
+     dhPinchStart={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),scale:dhPreviewScale};
+     dhPanStart=null;vp.classList.remove('is-panning');
+   }
  });
  vp.addEventListener('pointermove',e=>{
-   if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(!pts.has(e.pointerId))return;
+   const prev=pts.get(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY,interactive:prev?.interactive});
    if(pts.size===2){e.preventDefault();const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(dhPinchStart)dhSetScale(dhPinchStart.scale*(d/dhPinchStart.d));return}
-   if(pts.size===1&&dhPanStart){const dx=e.clientX-dhPanStart.x,dy=e.clientY-dhPanStart.y;if(Math.abs(dx)>3||Math.abs(dy)>3){dhPanStart.moved=true;dhDidPan=true;}if(vp.scrollWidth>vp.clientWidth||vp.scrollHeight>vp.clientHeight){e.preventDefault();vp.scrollLeft=dhPanStart.left-dx;vp.scrollTop=dhPanStart.top-dy}}
+   if(pts.size===1&&dhPanStart){
+     const dx=e.clientX-dhPanStart.x,dy=e.clientY-dhPanStart.y;
+     if(Math.abs(dx)>5||Math.abs(dy)>5){dhPanStart.moved=true;dhDidPan=true;}
+     if(dhPanStart.moved&&(vp.scrollWidth>vp.clientWidth||vp.scrollHeight>vp.clientHeight)){
+       e.preventDefault();vp.scrollLeft=dhPanStart.left-dx;vp.scrollTop=dhPanStart.top-dy;
+     }
+   }
  },{passive:false});
  const end=e=>{pts.delete(e.pointerId);if(pts.size<2)dhPinchStart=null;if(pts.size===0){dhPanStart=null;vp.classList.remove('is-panning')}};
  ['pointerup','pointercancel','lostpointercapture'].forEach(t=>vp.addEventListener(t,end));
- // suppress accidental click after dragging
- vp.addEventListener('click',e=>{if(dhDidPan){e.preventDefault();e.stopPropagation();dhDidPan=false}},true);
+ // Only suppress the synthetic click immediately following a real drag, never normal field clicks.
+ vp.addEventListener('click',e=>{
+   if(dhDidPan&&!isInteractiveTarget(e.target)){e.preventDefault();e.stopPropagation();}
+   dhDidPan=false;
+ },true);
 }
 function dhMakeEditable(){[
  ['out_congtrinh','in_congtrinh','Tên công trình',false],['out_hangmuc','in_hangmuc','Tên hạng mục',false],['out_donvithicong','in_donvithicong','Đơn vị thi công',false],['out_hopdong','in_hopdong','Mã số hợp đồng',false],['out_mathongbao','in_mathongbao','Mã số thông báo',false],['out_noidung','in_noidung','Nội dung thông báo',true],['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],['out_ngay3','in_ngay','Ngày lập biên bản',false]
@@ -2449,7 +2483,7 @@ function dhInitTokenClient(){
 function dhGoogleSignIn(){if(!dhInitTokenClient())return;if(window.dhTokenClient)window.dhTokenClient.requestAccessToken({prompt:dhGoogleToken?'':'consent'})}
 function dhGoogleSignOut(){if(window.google?.accounts?.oauth2&&dhGoogleToken)google.accounts.oauth2.revoke(dhGoogleToken,()=>{});dhGoogleToken='';const b=dhGetEl('googleUserBadge');if(b){b.textContent='';b.style.display='none'}dhStatus('Đã đăng xuất Google.')}
 async function dhFetchProfile(){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+dhGoogleToken}});const m=await r.json();const b=dhGetEl('googleUserBadge');if(b){b.textContent='Đang đăng nhập: '+(m.email||m.name||'Google user');b.style.display='inline-block'}const c=dhGetEl('dhCompactGoogleStatus');if(c)c.textContent='Đã đăng nhập: '+(m.email||m.name||'Google user')}catch(_){}}
-function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.2',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
+function dhPayload(){if(typeof dhSaveDraft==='function')dhSaveDraft();const ids=typeof DH_EDITABLE_FIELDS!=='undefined'?DH_EDITABLE_FIELDS:[];return{savedAt:new Date().toISOString(),app:'DongHui_ThongBao_Web_Vercel_v2.2.1',record:typeof dhRecord!=='undefined'?dhRecord:null,editable:Object.fromEntries(ids.map(id=>[id,dhGetEl(id)?.value||'']))}}
 function dhApplyPayload(p){if(p.record&&typeof dhRecord!=='undefined')dhRecord=p.record;if(p.editable)for(const [id,v]of Object.entries(p.editable)){const e=dhGetEl(id);if(e)e.value=v}try{if(typeof dhRenderProfiles==='function')dhRenderProfiles()}catch(_){}if(typeof syncData==='function')syncData();if(typeof dhSaveDraft==='function')dhSaveDraft()}
 async function dhFindDriveFile(){const q=encodeURIComponent(`name='${DH_DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`);const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`,{headers:{Authorization:'Bearer '+dhGoogleToken}});const d=await r.json();return d.files?.[0]||null}
 async function dhSaveToDrive(){if(!dhGoogleToken)return dhStatus('Bạn cần đăng nhập Google trước.');const payload=dhPayload(),file=await dhFindDriveFile(),meta={name:DH_DRIVE_FILE_NAME,parents:['appDataFolder'],mimeType:'application/json'},boundary='-------314159265358979323846',delimiter='\r\n--'+boundary+'\r\n',close='\r\n--'+boundary+'--',body=delimiter+'Content-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+delimiter+'Content-Type: application/json\r\n\r\n'+JSON.stringify(payload)+close,url=file?`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';const r=await fetch(url,{method:file?'PATCH':'POST',headers:{Authorization:'Bearer '+dhGoogleToken,'Content-Type':'multipart/related; boundary='+boundary},body});dhStatus(r.ok?'Đã lưu dữ liệu lên Google Drive.':'Lưu Google Drive chưa thành công.',r.ok)}
@@ -2523,7 +2557,24 @@ function dhHideDirectEditSettings(){
 function dhOpenAttachmentPicker(){window.dhAttachmentMode='append';dhGetEl('attachInput')?.click()}
 function dhReplaceAttachments(){window.dhAttachmentMode='replace';dhGetEl('attachInput')?.click()}
 
-(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhGetEl('btnInlineReplace')?.addEventListener('click',dhReplaceAttachments);dhGetEl('btnInlineTranslate')?.addEventListener('click',()=>autoTranslateText());
+
+function dhSyncCompactApiToLegacy(){
+    const compactKey=dhGetEl('dhCompactApiKey');
+    const legacyKey=dhGetEl('apiKey');
+    const compactSave=dhGetEl('dhCompactSaveApiKey');
+    const legacySave=dhGetEl('saveApiKey');
+    if(compactKey&&legacyKey&&legacyKey.value!==compactKey.value){ legacyKey.value=compactKey.value; }
+    if(compactSave&&legacySave&&legacySave.checked!==compactSave.checked){ legacySave.checked=compactSave.checked; }
+}
+function dhSyncLegacyApiToCompact(){
+    const compactKey=dhGetEl('dhCompactApiKey');
+    const legacyKey=dhGetEl('apiKey');
+    const compactSave=dhGetEl('dhCompactSaveApiKey');
+    const legacySave=dhGetEl('saveApiKey');
+    if(compactKey&&legacyKey&&compactKey.value!==legacyKey.value){ compactKey.value=legacyKey.value||''; }
+    if(compactSave&&legacySave){ compactSave.checked=!!legacySave.checked; }
+}
+(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhGetEl('btnInlineReplace')?.addEventListener('click',dhReplaceAttachments);dhGetEl('btnInlineTranslate')?.addEventListener('click',()=>autoTranslateText());dhSyncLegacyApiToCompact();dhGetEl('dhCompactApiKey')?.addEventListener('input',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('dhCompactSaveApiKey')?.addEventListener('change',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('apiKey')?.addEventListener('input',dhSyncLegacyApiToCompact);dhGetEl('saveApiKey')?.addEventListener('change',dhSyncLegacyApiToCompact);
  dhGetEl('logoContainer')?.addEventListener('click',()=>dhGetEl('logoInput')?.click());
  dhGetEl('docTitleClickZone')?.addEventListener('click',dhOpenDocTypePopup);
  dhGetEl('dhCloseDocType')?.addEventListener('click',dhCloseDocTypePopup);
