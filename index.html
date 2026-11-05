@@ -649,7 +649,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             </div>
         </div>
         <div class="form-group">
-            <label id="ui_lbl_date">Ngày lập biên bản:</label>
+            <label id="ui_lbl_date">Ngày xuất biên bản:</label>
             <input type="text" id="in_ngay" value="2026/10/08" oninput="syncData()">
         </div>
         <div class="google-sync-box">
@@ -751,7 +751,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
                     <span class="dh-signature-title text-black" id="lbl_r10">主办工程师签字 / Kỹ sư phụ trách chính ký:</span>
                     <div class="dh-signature-foot"><div class="dh-signature-name text-blue" id="out_kysu">Phạm Hồng Tiến</div>
                     <div class="dh-signature-date">
-                        <span class="text-black" id="lbl_date3">日期 / Ngày:</span> <span id="out_ngay3" class="text-black">2026/10/08</span>
+                        <span class="text-black" id="lbl_date3">日期 / Ngày:</span> <span id="out_ngay3" class="text-blue editable-highlight" title="Chạm để sửa ngày xuất biên bản">2026/10/08</span>
                     </div></div>
                 </div></td>
                 <td class="dh-signature-cell"><div class="dh-signature-inner">
@@ -858,7 +858,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             lblDeputy: "Phó tổng giám đốc ký:",
             lblLead: "Kỹ sư phụ trách chính ký:",
             lblAck: "Đơn vị thi công kí nhận:",
-            lblDate: "Ngày lập biên bản:",
+            lblDate: "Ngày xuất biên bản:",
             sec3: "3. Xuất File & Hồ Sơ",
             btnPng: "Xuất Ảnh PNG (Nhiều trang)",
             btnPdf: "Xuất File PDF (Nhiều trang)",
@@ -1485,7 +1485,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
             tiendo_vi: "BIÊN BẢN THÔNG BÁO CHẬM TIẾN ĐỘ", chatluong_vi: "BIÊN BẢN THÔNG BÁO VI PHẠM CHẤT LƯỢNG", antoan_vi: "BIÊN BẢN THÔNG BÁO VI PHẠM AN TOÀN",
             cancu_tiendo: ["1. Điều khoản về tiến độ trong hợp đồng,", "2. Bảng cam kết tiến độ thi công nhà thầu kí,", "3. Tình hình thực tế thi công."],
             cancu_chatluong: ["1. Điều khoản về chất lượng trong hợp đồng,", "2. Tài liệu bàn giao kĩ thuật,", "3. Bảng check list lỗi chất lượng thi công."],
-            cancu_antoan: ["1. Điều khoản về an toàn trong hợp đồng,", "2. Tài liệu bàn giao kĩ thuật,", "3. Bảng check list lỗi an toàn thi công."],
+            cancu_antoan: ["1. Điều khoản về an toàn trong hợp đồng,", "2. Tài liệu bàn giao quy định an toàn, cam kết an toàn,", "3. Bảng check list lỗi an toàn thi công."],
             r1: "Tên công trình", r2: "Tên hạng mục", r3: "Đơn vị thi công", r4: "Mã số hợp đồng", r5: "Mã số thông báo",
             r6: "Căn cứ thông báo", r7: "Nội dung thông báo",
             r8: "Giám đốc công trình ký", r9: "Phó tổng giám đốc ký", r10: "Kỹ sư phụ trách chính ký", r11: "Đơn vị thi công kí nhận",
@@ -1842,7 +1842,7 @@ Nếu nhà thầu không có phương án cải thiện, công ty sẽ tiến h�
         const type = document.getElementById('docType').value;
         const subObj = dict[document.getElementById('subLang').value] || dict['ZH'];
         document.getElementById('modalTitle').innerText = subObj[type] + " (Mẫu Chuẩn)";
-        document.getElementById('modalDesc').innerHTML = "<b>Quy chuẩn:</b><br>- Chọn ngôn ngữ giao diện ở góc phải.<br>- Ngày lập biên bản nằm ở ô Kỹ sư phụ trách chính.<br>- Ảnh đính kèm tự động phóng to sát mép và chống cắt ngang trang.";
+        document.getElementById('modalDesc').innerHTML = "<b>Quy chuẩn:</b><br>- Chọn ngôn ngữ giao diện ở góc phải.<br>- Ngày xuất biên bản nằm ở ô Kỹ sư phụ trách chính và có thể chạm để chỉnh sửa.<br>- Ảnh đính kèm tự động phóng to sát mép và chống cắt ngang trang.";
         document.getElementById('sampleModal').style.display = 'flex';
     }
     function closeModal() { document.getElementById('sampleModal').style.display = 'none'; }
@@ -2464,7 +2464,7 @@ function dhBindPanZoom(){
  },true);
 }
 function dhMakeEditable(){[
- ['out_congtrinh','in_congtrinh','Tên công trình',false],['out_hangmuc','in_hangmuc','Tên hạng mục',false],['out_donvithicong','in_donvithicong','Đơn vị thi công',false],['out_hopdong','in_hopdong','Mã số hợp đồng',false],['out_mathongbao','in_mathongbao','Mã số thông báo',false],['out_noidung','in_noidung','Nội dung thông báo',true],['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],['out_ngay3','in_ngay','Ngày lập biên bản',false]
+ ['out_congtrinh','in_congtrinh','Tên công trình',false],['out_hangmuc','in_hangmuc','Tên hạng mục',false],['out_donvithicong','in_donvithicong','Đơn vị thi công',false],['out_hopdong','in_hopdong','Mã số hợp đồng',false],['out_mathongbao','in_mathongbao','Mã số thông báo',false],['out_noidung','in_noidung','Nội dung thông báo',true],['out_giamdoc','in_giamdoc','Giám đốc công trình ký',false],['out_phogiamdoc','in_phogiamdoc','Phó tổng giám đốc ký',false],['out_kysu','in_kysu','Kỹ sư phụ trách chính ký',false],['out_thicongky','in_thicongky','Đơn vị thi công kí nhận',false],['out_ngay3','in_ngay','Ngày xuất biên bản',false]
 ].forEach(([o,i,l,m])=>{const el=dhGetEl(o);if(!el)return;el.classList.add('editable-highlight');if(m)el.classList.add('editable-block');el.onclick=()=>dhOpenQuickEdit(i,l,m)})}
 function dhOpenQuickEdit(targetId,label,multiline){const t=dhGetEl(targetId);if(!t)return;dhQuickEditState={targetId,multiline};dhGetEl('quickEditLabel').textContent=label+':';const inp=dhGetEl('quickEditInput'),ta=dhGetEl('quickEditTextarea');if(multiline){inp.style.display='none';ta.style.display='block';ta.value=t.value}else{ta.style.display='none';inp.style.display='block';inp.value=t.value}const pop=dhGetEl('quickEditPopup');pop.classList.add('is-open');pop.setAttribute('aria-hidden','false');setTimeout(()=>{(multiline?ta:inp).focus({preventScroll:true});dhPlacePopupForKeyboard()},80)}
 function dhCloseQuickEdit(){const pop=dhGetEl('quickEditPopup');pop.classList.remove('is-open');pop.setAttribute('aria-hidden','true')}
@@ -2537,10 +2537,22 @@ function dhOpenDocTypePopup(){
 }
 function dhCloseDocTypePopup(){const p=dhGetEl('dhDocTypePopup');p?.classList.remove('is-open');p?.setAttribute('aria-hidden','true')}
 function dhSelectDocType(type){const s=dhGetEl('docType');if(s){s.value=type;syncData();if(typeof dhQueueSave==='function')dhQueueSave();}dhCloseDocTypePopup()}
+function dhTodayYMD(){
+ const d=new Date();
+ const y=d.getFullYear();
+ const m=String(d.getMonth()+1).padStart(2,'0');
+ const day=String(d.getDate()).padStart(2,'0');
+ return `${y}/${m}/${day}`;
+}
+function dhEnsureReportDate(){
+ const el=dhGetEl('in_ngay');
+ if(el && !String(el.value||'').trim()){ el.value=dhTodayYMD(); }
+}
 function dhNewReport(){
  if(!confirm('Tạo biên bản mới? Nội dung biên bản hiện tại trên thiết bị sẽ được làm trống.'))return;
- const ids=['in_congtrinh','in_hangmuc','in_donvithicong','in_hopdong','in_mathongbao','in_noidung','in_ngay'];
+ const ids=['in_congtrinh','in_hangmuc','in_donvithicong','in_hopdong','in_mathongbao','in_noidung'];
  ids.forEach(id=>{const e=dhGetEl(id);if(e)e.value=''});
+ const dateEl=dhGetEl('in_ngay');if(dateEl)dateEl.value=dhTodayYMD();
  dhGetEl('previewImagesContainer')?.replaceChildren();const st=dhGetEl('attachmentStatus');if(st)st.textContent='Chưa chọn ảnh đính kèm.';
  const ai=dhGetEl('attachInput');if(ai)ai.value='';syncData();if(typeof dhSaveDraft==='function')dhSaveDraft();dhFitToScreen();
 }
@@ -2582,7 +2594,7 @@ function dhSyncLegacyApiToCompact(){
     if(compactKey&&legacyKey&&compactKey.value!==legacyKey.value){ compactKey.value=legacyKey.value||''; }
     if(compactSave&&legacySave){ compactSave.checked=!!legacySave.checked; }
 }
-(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhGetEl('btnInlineReplace')?.addEventListener('click',dhReplaceAttachments);dhGetEl('btnInlineTranslate')?.addEventListener('click',()=>autoTranslateText());dhSyncLegacyApiToCompact();dhGetEl('dhCompactApiKey')?.addEventListener('input',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('dhCompactSaveApiKey')?.addEventListener('change',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('apiKey')?.addEventListener('input',dhSyncLegacyApiToCompact);dhGetEl('saveApiKey')?.addEventListener('change',dhSyncLegacyApiToCompact);
+(function(){const old=window.onload;window.onload=function(){if(typeof old==='function')old();dhEnsureReportDate();syncData();dhHideDirectEditSettings();dhMakeEditable();dhBindPanZoom();dhFitToScreen();setTimeout(dhFitToScreen,150);window.addEventListener('resize',()=>setTimeout(dhFitToScreen,80));dhGetEl('btnFitScreen')?.addEventListener('click',dhFitToScreen);dhGetEl('zoomOutBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale-.1));dhGetEl('zoomInBtn')?.addEventListener('click',()=>dhSetScale(dhPreviewScale+.1));dhGetEl('btnSettings')?.addEventListener('click',()=>dhOpenPanel('dhSettingsPanel'));dhGetEl('btnCloseSettings')?.addEventListener('click',()=>dhClosePanel('dhSettingsPanel'));dhGetEl('btnExportMenu')?.addEventListener('click',()=>dhOpenPanel('dhExportPanel'));dhGetEl('btnCloseExport')?.addEventListener('click',()=>dhClosePanel('dhExportPanel'));dhGetEl('quickEditClose')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditCancel')?.addEventListener('click',dhCloseQuickEdit);dhGetEl('quickEditSave')?.addEventListener('click',dhSaveQuickEdit);dhGetEl('btnInlineAttach')?.addEventListener('click',dhOpenAttachmentPicker);dhGetEl('btnInlineReplace')?.addEventListener('click',dhReplaceAttachments);dhGetEl('btnInlineTranslate')?.addEventListener('click',()=>autoTranslateText());dhSyncLegacyApiToCompact();dhGetEl('dhCompactApiKey')?.addEventListener('input',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('dhCompactSaveApiKey')?.addEventListener('change',()=>{dhSyncCompactApiToLegacy();dhQueueSave();});dhGetEl('apiKey')?.addEventListener('input',dhSyncLegacyApiToCompact);dhGetEl('saveApiKey')?.addEventListener('change',dhSyncLegacyApiToCompact);
  dhGetEl('logoContainer')?.addEventListener('click',()=>dhGetEl('logoInput')?.click());
  dhGetEl('docTitleClickZone')?.addEventListener('click',dhOpenDocTypePopup);
  dhGetEl('dhCloseDocType')?.addEventListener('click',dhCloseDocTypePopup);

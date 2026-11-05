@@ -27,3 +27,7 @@ Vercel sẽ phục vụ trực tiếp `index.html`.
 - Google Translation API key chạy ở phía trình duyệt nên không nên dùng key production không giới hạn. Nếu phát hành rộng, nên chuyển dịch qua API backend/Vercel Function.
 - `html2canvas` hiện tải từ CDN. Sau lần tải thành công, phần giao diện PWA cốt lõi vẫn có cache; chức năng xuất ảnh/PDF có thể cần Internet nếu thư viện chưa được browser cache.
 - Word hiện là HTML `.doc`, đúng với bản Android gốc, không phải `.docx`.
+
+
+## v2.3.1
+- Cập nhật căn cứ biên bản vi phạm an toàn: “Tài liệu bàn giao quy định an toàn, cam kết an toàn”.
